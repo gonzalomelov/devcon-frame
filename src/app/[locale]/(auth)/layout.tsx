@@ -1,6 +1,8 @@
 import { enUS, frFR } from '@clerk/localizations';
 import { ClerkProvider } from '@clerk/nextjs';
 
+import { Env } from '../../../libs/Env';
+
 export default function AuthLayout(props: {
   children: React.ReactNode;
   params: { locale: string };
@@ -8,7 +10,7 @@ export default function AuthLayout(props: {
   let clerkLocale = enUS;
   let signInUrl = '/sign-in';
   let signUpUrl = '/sign-up';
-  let dashboardUrl = '/dashboard';
+  const shopifyAppUrl = `${Env.NEXT_PUBLIC_SHOPIFY_APP_URL}/oauth-callback.html`;
 
   if (props.params.locale === 'fr') {
     clerkLocale = frFR;
@@ -17,7 +19,6 @@ export default function AuthLayout(props: {
   if (props.params.locale !== 'en') {
     signInUrl = `/${props.params.locale}${signInUrl}`;
     signUpUrl = `/${props.params.locale}${signUpUrl}`;
-    dashboardUrl = `/${props.params.locale}${dashboardUrl}`;
   }
 
   return (
@@ -25,8 +26,9 @@ export default function AuthLayout(props: {
       localization={clerkLocale}
       signInUrl={signInUrl}
       signUpUrl={signUpUrl}
-      signInFallbackRedirectUrl={dashboardUrl}
-      signUpFallbackRedirectUrl={dashboardUrl}
+      signInForceRedirectUrl={shopifyAppUrl}
+      signUpForceRedirectUrl={shopifyAppUrl}
+      allowedRedirectOrigins={[Env.NEXT_PUBLIC_SHOPIFY_APP_URL]}
     >
       {props.children}
     </ClerkProvider>
