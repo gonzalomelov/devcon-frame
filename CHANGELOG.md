@@ -1,3 +1,10 @@
+# 1.0.0 (2024-06-15)
+
+
+### Features
+
+* provide authorization to Shopify App ([5242474](https://github.com/gonzalomelov/target-onchain/commit/5242474ff3077ecd48e8daf188984164613e16f2))
+
 # [3.52.0](https://github.com/ixartz/Next-js-Boilerplate/compare/v3.51.0...v3.52.0) (2024-05-31)
 
 
