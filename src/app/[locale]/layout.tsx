@@ -4,7 +4,6 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { NextIntlClientProvider, useMessages } from 'next-intl';
 
-import { DemoBadge } from '@/components/DemoBadge';
 import { AppConfig } from '@/utils/AppConfig';
 
 export const metadata: Metadata = {
@@ -50,8 +49,6 @@ export default function RootLayout(props: {
           messages={messages}
         >
           {props.children}
-
-          <DemoBadge />
         </NextIntlClientProvider>
       </body>
     </html>
