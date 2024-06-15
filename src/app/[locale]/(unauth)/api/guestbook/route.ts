@@ -19,15 +19,12 @@ export const POST = async (request: Request) => {
   }
 
   try {
-    const guestbook = await db
-      .insert(guestbookSchema)
-      .values(parse.data)
-      .returning();
+    const guestbook = await db.insert(guestbookSchema).values(parse.data);
 
     logger.info('A new guestbook has been created');
 
     return NextResponse.json({
-      id: guestbook[0]?.id,
+      id: guestbook[0]?.insertId,
     });
   } catch (error) {
     logger.error(error, 'An error occurred while creating a guestbook');
@@ -51,8 +48,7 @@ export const PUT = async (request: Request) => {
         ...parse.data,
         updatedAt: sql`(strftime('%s', 'now'))`,
       })
-      .where(eq(guestbookSchema.id, parse.data.id))
-      .run();
+      .where(eq(guestbookSchema.id, parse.data.id));
 
     logger.info('A guestbook entry has been updated');
 
@@ -75,8 +71,7 @@ export const DELETE = async (request: Request) => {
   try {
     await db
       .delete(guestbookSchema)
-      .where(eq(guestbookSchema.id, parse.data.id))
-      .run();
+      .where(eq(guestbookSchema.id, parse.data.id));
 
     logger.info('A guestbook entry has been deleted');
 

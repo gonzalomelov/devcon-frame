@@ -1,15 +1,21 @@
-import { createClient } from '@libsql/client';
-import { drizzle } from 'drizzle-orm/libsql';
-import { migrate } from 'drizzle-orm/libsql/migrator';
+import { drizzle } from 'drizzle-orm/mysql2';
+import { migrate } from 'drizzle-orm/mysql2/migrator';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import mysql from 'mysql2/promise';
 
 import { Env } from './Env';
 
-const client = createClient({
-  url: Env.DATABASE_URL,
-  authToken: Env.DATABASE_AUTH_TOKEN,
+const databaseUrl = new URL(Env.DATABASE_URL);
+
+const pool = mysql.createPool({
+  host: databaseUrl.hostname,
+  port: Number(databaseUrl.port) || 3306,
+  user: databaseUrl.username,
+  password: databaseUrl.password,
+  database: databaseUrl.pathname.substring(1),
 });
 
-export const db = drizzle(client);
+export const db = drizzle(pool);
 
 // Disable migrate function if using Edge runtime and use `npm run db:migrate` instead.
 // Only run migrate in development. Otherwise, migrate will also be run during the build which can cause errors.

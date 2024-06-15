@@ -35,6 +35,7 @@
     "@spotlightjs/spotlight": "^1.2.17",
     "@t3-oss/env-nextjs": "^0.10.1",
     "drizzle-orm": "^0.31.0",
+    "mysql2": "^3.10.0",
     "next": "^14.2.3",
     "next-intl": "^3.14.1",
     "pino": "^8.21.0",
