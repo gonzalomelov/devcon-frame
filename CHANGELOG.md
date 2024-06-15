@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/gonzalomelov/target-onchain/compare/v1.0.0...v1.1.0) (2024-06-15)
+
+
+### Features
+
+* add Terms and Conditions page ([6a42c8b](https://github.com/gonzalomelov/target-onchain/commit/6a42c8b6a579983270385fa51b72df1380d05e6e))
+
 # 1.0.0 (2024-06-15)
 
 
