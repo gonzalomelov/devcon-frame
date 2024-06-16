@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server';
 
 import { db } from '@/libs/DB';
 import { Env } from '@/libs/Env';
+import { logger } from '@/libs/Logger';
 import { frameSchema, productSchema } from '@/models/Schema';
 import { FarcasterMessageValidation } from '@/validations/FarcasterMessageValidation';
 
@@ -139,103 +140,111 @@ export const POST = async (request: Request) => {
     return NextResponse.json(parse.error.format(), { status: 422 });
   }
 
-  // Get the user wallet
-  const response = await fetch(`${Env.NEYNAR_URL}/farcaster/frame/validate`, {
-    method: 'POST',
-    headers: {
-      accept: 'application/json',
-      api_key: Env.NEYNAR_API_KEY,
-      'content-type': 'application/json',
-    },
-    body: JSON.stringify({
-      cast_reaction_context: true,
-      follow_context: true,
-      signer_context: true,
-      message_bytes_in_hex: parse.data.trustedData.messageBytes,
-    }),
-  });
-
-  const trustedData = await response.json();
-
-  const {
-    action: {
-      url,
-      interactor: {
-        // fid,
-        verified_addresses: { eth_addresses: ethAddresses },
+  try {
+    // Get the user wallet
+    const response = await fetch(`${Env.NEYNAR_URL}/farcaster/frame/validate`, {
+      method: 'POST',
+      headers: {
+        accept: 'application/json',
+        api_key: Env.NEYNAR_API_KEY,
+        'content-type': 'application/json',
       },
-    },
-  } = trustedData;
+      body: JSON.stringify({
+        cast_reaction_context: true,
+        follow_context: true,
+        signer_context: true,
+        message_bytes_in_hex: parse.data.trustedData.messageBytes,
+      }),
+    });
 
-  const urlParts = url.split('/');
-  const idPart = urlParts[urlParts.length - 2];
+    const trustedData = await response.json();
 
-  if (!idPart) {
-    return new NextResponse('Invalid URL structure', { status: 400 });
-  }
+    const {
+      action: {
+        url,
+        interactor: {
+          // fid,
+          verified_addresses: { eth_addresses: ethAddresses },
+        },
+      },
+    } = trustedData;
 
-  const frameId = parseInt(idPart, 10);
+    const urlParts = url.split('/');
+    const idPart = urlParts[urlParts.length - 2];
 
-  if (Number.isNaN(frameId)) {
-    return new NextResponse('Invalid ID', { status: 400 });
-  }
+    if (!idPart) {
+      return new NextResponse('Invalid URL structure', { status: 400 });
+    }
 
-  const frames = await db
-    .select()
-    .from(frameSchema)
-    .where(eq(frameSchema.id, frameId))
-    .limit(1);
+    const frameId = parseInt(idPart, 10);
 
-  if (frames.length === 0) {
-    return new NextResponse('Frame not found', { status: 404 });
-  }
+    if (Number.isNaN(frameId)) {
+      return new NextResponse('Invalid ID', { status: 400 });
+    }
 
-  const [frame] = frames;
+    const frames = await db
+      .select()
+      .from(frameSchema)
+      .where(eq(frameSchema.id, frameId))
+      .limit(1);
 
-  // Get onchain data
-  const valid = await verifyReceiptsRunningAttestation(ethAddresses[0]!);
+    if (frames.length === 0) {
+      return new NextResponse('Frame not found', { status: 404 });
+    }
 
-  // Get products
-  const products = await db.select().from(productSchema);
+    const [frame] = frames;
 
-  // Recommend product/s based on onchain data
-  let recommendedProduct;
-  if (valid) {
-    recommendedProduct = products.find((product) =>
-      /Run|Running|Jog/i.test(product.description),
-    );
-    if (!recommendedProduct) {
+    // Get onchain data
+    const valid = await verifyReceiptsRunningAttestation(ethAddresses[0]!);
+
+    // Get products
+    const products = await db.select().from(productSchema);
+
+    // Recommend product/s based on onchain data
+    let recommendedProduct;
+    if (valid) {
+      recommendedProduct = products.find((product) =>
+        /Run|Running|Jog/i.test(product.description),
+      );
+      if (!recommendedProduct) {
+        const randomIndex = Math.floor(Math.random() * products.length);
+        recommendedProduct = products[randomIndex];
+      }
+    } else {
       const randomIndex = Math.floor(Math.random() * products.length);
       recommendedProduct = products[randomIndex];
     }
-  } else {
-    const randomIndex = Math.floor(Math.random() * products.length);
-    recommendedProduct = products[randomIndex];
+
+    const buttons: Button[] = [
+      {
+        text: 'View',
+        action: 'link',
+        url: `https://${frame!.shop}/products/${recommendedProduct!.handle}`, // Checkout ! on recommendedProduct!.handle
+      },
+      {
+        text: 'Buy',
+        action: 'link',
+        url: `https://${frame!.shop}/products/${recommendedProduct!.handle}`, // Checkout ! on recommendedProduct!.handle
+      },
+    ];
+
+    const htmlContent = pageFromTemplateWithButtons(
+      recommendedProduct!.image,
+      recommendedProduct!.title,
+      mainPageBody,
+      buttons,
+    );
+
+    return new NextResponse(htmlContent, {
+      headers: {
+        'Content-Type': 'text/html',
+      },
+    });
+  } catch (error) {
+    // FIXME: Return the starting frame
+
+    logger.error(error, 'An error occurred while handling the frame action');
+
+    return NextResponse.json({}, { status: 500 });
   }
-
-  const buttons: Button[] = [
-    {
-      text: 'View',
-      action: 'link',
-      url: `https://${frame!.shop}/products/${recommendedProduct!.handle}`,
-    },
-    {
-      text: 'Buy',
-      action: 'link',
-      url: `https://${frame!.shop}/products/${recommendedProduct!.handle}`,
-    },
-  ];
-
-  const htmlContent = pageFromTemplateWithButtons(
-    recommendedProduct!.image,
-    recommendedProduct!.title,
-    mainPageBody,
-    buttons,
-  );
-
-  return new NextResponse(htmlContent, {
-    headers: {
-      'Content-Type': 'text/html',
-    },
-  });
 };

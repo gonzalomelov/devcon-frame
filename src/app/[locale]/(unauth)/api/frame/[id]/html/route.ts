@@ -113,6 +113,8 @@ export const GET = async (request: Request) => {
       },
     });
   } catch (error) {
+    // FIXME: Return the starting frame or a standard one
+
     logger.error(error, 'An error occurred while retrieving the frame');
 
     return NextResponse.json({}, { status: 500 });
