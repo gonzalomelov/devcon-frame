@@ -8,6 +8,11 @@ export const Env = createEnv({
     DATABASE_URL: z.string().min(1),
     DATABASE_AUTH_TOKEN: z.string().optional(),
     LOGTAIL_SOURCE_TOKEN: z.string().optional(),
+    NEYNAR_API_KEY: z.string().min(1),
+    NEYNAR_URL: z.string(),
+    BASE_EAS_SCAN_URL: z.string(),
+    RECEIPTS_XYZ_ATTESTER: z.string(),
+    RECEIPTS_XYZ_NEW_USER_SCHEMA: z.string(),
   },
   client: {
     NEXT_PUBLIC_APP_URL: z.string().optional(),
@@ -21,10 +26,15 @@ export const Env = createEnv({
     DATABASE_URL: process.env.DATABASE_URL,
     DATABASE_AUTH_TOKEN: process.env.DATABASE_AUTH_TOKEN,
     LOGTAIL_SOURCE_TOKEN: process.env.LOGTAIL_SOURCE_TOKEN,
+    NEYNAR_API_KEY: process.env.NEYNAR_API_KEY,
     NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
     NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY:
       process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY,
     NEXT_PUBLIC_CLERK_SIGN_IN_URL: process.env.NEXT_PUBLIC_CLERK_SIGN_IN_URL,
     NEXT_PUBLIC_SHOPIFY_APP_URL: process.env.NEXT_PUBLIC_SHOPIFY_APP_URL,
+    NEYNAR_URL: process.env.NEYNAR_URL,
+    BASE_EAS_SCAN_URL: process.env.BASE_EAS_SCAN_URL,
+    RECEIPTS_XYZ_ATTESTER: process.env.RECEIPTS_XYZ_ATTESTER,
+    RECEIPTS_XYZ_NEW_USER_SCHEMA: process.env.RECEIPTS_XYZ_NEW_USER_SCHEMA,
   },
 });
