@@ -1,3 +1,10 @@
+# [1.2.0](https://github.com/gonzalomelov/target-onchain/compare/v1.1.0...v1.2.0) (2024-06-16)
+
+
+### Features
+
+* get frame html and frame action interaction to recommend product ([170ded4](https://github.com/gonzalomelov/target-onchain/commit/170ded448092e7b15e7114b9cfdbc317543afe47))
+
 # [1.1.0](https://github.com/gonzalomelov/target-onchain/compare/v1.0.0...v1.1.0) (2024-06-15)
 
 
