@@ -5,6 +5,7 @@ import { db } from '@/libs/DB';
 import { Env } from '@/libs/Env';
 import { logger } from '@/libs/Logger';
 import { frameSchema, productSchema } from '@/models/Schema';
+import { getBaseUrl } from '@/utils/Helpers';
 import { FarcasterMessageValidation } from '@/validations/FarcasterMessageValidation';
 
 const mainPageBody = `
@@ -229,7 +230,7 @@ export const POST = async (request: Request) => {
     ];
 
     const htmlContent = pageFromTemplateWithButtons(
-      recommendedProduct!.image,
+      `${getBaseUrl()}/api/og?title=${recommendedProduct!.title}&subtitle=${recommendedProduct!.description}&content=$100&url=${recommendedProduct!.image}&width=600`,
       recommendedProduct!.title,
       mainPageBody,
       buttons,
