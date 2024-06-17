@@ -1,3 +1,10 @@
+# [1.3.0](https://github.com/gonzalomelov/target-onchain/compare/v1.2.0...v1.3.0) (2024-06-17)
+
+
+### Features
+
+* add endpoint to retrieve a generated frame image ([001782b](https://github.com/gonzalomelov/target-onchain/commit/001782b58884b9b8ff8a4e94b4640f8ac0d2dc16))
+
 # [1.2.0](https://github.com/gonzalomelov/target-onchain/compare/v1.1.0...v1.2.0) (2024-06-16)
 
 
