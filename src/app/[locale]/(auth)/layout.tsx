@@ -10,7 +10,6 @@ export default function AuthLayout(props: {
   let clerkLocale = enUS;
   let signInUrl = '/sign-in';
   let signUpUrl = '/sign-up';
-  const shopifyAppUrl = `${Env.NEXT_PUBLIC_SHOPIFY_APP_URL}/oauth-callback.html`;
 
   if (props.params.locale === 'fr') {
     clerkLocale = frFR;
@@ -26,8 +25,6 @@ export default function AuthLayout(props: {
       localization={clerkLocale}
       signInUrl={signInUrl}
       signUpUrl={signUpUrl}
-      signInForceRedirectUrl={shopifyAppUrl}
-      signUpForceRedirectUrl={shopifyAppUrl}
       allowedRedirectOrigins={[Env.NEXT_PUBLIC_SHOPIFY_APP_URL]}
     >
       {props.children}
