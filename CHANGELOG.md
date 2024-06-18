@@ -1,3 +1,10 @@
+## [1.3.1](https://github.com/gonzalomelov/target-onchain/compare/v1.3.0...v1.3.1) (2024-06-18)
+
+
+### Bug Fixes
+
+* do not redirect to /dashboard if user has signed in. Still need to define what to do ([32cb5db](https://github.com/gonzalomelov/target-onchain/commit/32cb5db6fe2bc54c6ac2ebd85e5c8d228fc5ce6b))
+
 # [1.3.0](https://github.com/gonzalomelov/target-onchain/compare/v1.2.0...v1.3.0) (2024-06-17)
 
 
