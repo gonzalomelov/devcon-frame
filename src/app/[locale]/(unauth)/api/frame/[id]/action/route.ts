@@ -216,18 +216,29 @@ export const POST = async (request: Request) => {
       recommendedProduct = products[randomIndex];
     }
 
-    const buttons: Button[] = [
-      {
-        text: 'View',
-        action: 'link',
-        url: `https://${frame!.shop}/products/${recommendedProduct!.handle}`, // Checkout ! on recommendedProduct!.handle
-      },
-      {
+    const buttons: Button[] = [];
+
+    const productUrl = `https://${frame!.shop}/products/${recommendedProduct!.handle}`;
+
+    buttons.push({
+      text: 'View',
+      action: 'link',
+      url: productUrl,
+    });
+
+    const match = /gid:\/\/shopify\/ProductVariant\/([0-9]+)/.exec(
+      recommendedProduct!.variantId,
+    );
+
+    if (match) {
+      const cartUrl = `https://${frame!.shop}/cart/${match[1]}:1`;
+
+      buttons.push({
         text: 'Buy',
         action: 'link',
-        url: `https://${frame!.shop}/products/${recommendedProduct!.handle}`, // Checkout ! on recommendedProduct!.handle
-      },
-    ];
+        url: cartUrl,
+      });
+    }
 
     const htmlContent = pageFromTemplateWithButtons(
       `${getBaseUrl()}/api/og?title=${recommendedProduct!.title}&subtitle=${recommendedProduct!.description}&content=$100&url=${recommendedProduct!.image}&width=600`,
