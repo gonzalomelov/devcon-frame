@@ -1,3 +1,10 @@
+# [1.4.0](https://github.com/gonzalomelov/target-onchain/compare/v1.3.1...v1.4.0) (2024-06-18)
+
+
+### Features
+
+* use cart when pressing buy ([f379f57](https://github.com/gonzalomelov/target-onchain/commit/f379f57ec6f20af173c426367c7efc21fa035a48))
+
 ## [1.3.1](https://github.com/gonzalomelov/target-onchain/compare/v1.3.0...v1.3.1) (2024-06-18)
 
 
