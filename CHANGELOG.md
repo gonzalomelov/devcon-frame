@@ -1,3 +1,10 @@
+# [1.5.0](https://github.com/gonzalomelov/target-onchain/compare/v1.4.0...v1.5.0) (2024-06-20)
+
+
+### Features
+
+* add support page ([c96ef4a](https://github.com/gonzalomelov/target-onchain/commit/c96ef4ab3755a574d1c9b70ab78af20007445baf))
+
 # [1.4.0](https://github.com/gonzalomelov/target-onchain/compare/v1.3.1...v1.4.0) (2024-06-18)
 
 
