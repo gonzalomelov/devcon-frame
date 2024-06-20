@@ -4,11 +4,12 @@
     "about_link": "About",
     "guestbook_link": "Guestbook",
     "portfolio_link": "Portfolio",
+    "terms_and_conditions_link": "Terms and Conditions",
     "sign_in_link": "Sign in",
     "sign_up_link": "Sign up"
   },
   "BaseTemplate": {
-    "description": "Starter code for your Nextjs Boilerplate with Tailwind CSS",
+    "description": "Deliver personalized products to your users based on their onchain data",
     "made_with": "Made with"
   },
   "Index": {

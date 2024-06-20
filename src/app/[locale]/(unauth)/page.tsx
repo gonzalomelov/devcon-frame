@@ -1,7 +1,5 @@
 import { getTranslations } from 'next-intl/server';
 
-import { Sponsors } from '@/components/Sponsors';
-
 export async function generateMetadata(props: { params: { locale: string } }) {
   const t = await getTranslations({
     locale: props.params.locale,
@@ -18,43 +16,45 @@ export default function Index() {
   return (
     <>
       <p>
-        Looking for a SaaS Boilerplate?{' '}
+        Looking to REALLY sell your products on Farcaster?{' '}
         <a
           className="text-blue-700 hover:border-b-2 hover:border-blue-700"
-          href="https://nextjs-boilerplate.com/pro-saas-starter-kit"
+          href="https://apps.shopify.com/target-onchain"
         >
-          Next.js Boilerplate SaaS
+          Target Onchain
         </a>{' '}
-        can help you build one.
+        can help you achieve it.
       </p>
       <p>
         Follow{' '}
         <a
           className="text-blue-700 hover:border-b-2 hover:border-blue-700"
-          href="https://twitter.com/ixartz"
+          href="https://warpcast.com/gonzalomelov.eth"
           target="_blank"
         >
-          @Ixartz on Twitter
+          @gonzalomelov on Warpcast
         </a>{' '}
-        for updates and more information about the boilerplate.
+        for updates and more information about the release.
       </p>
-      <p>
+      {/* <p>
         Our sponsors&apos; exceptional support has made this project possible.
         Their services integrate seamlessly with the boilerplate, and we
         recommend trying them out.
       </p>
       <h2 className="mt-5 text-2xl font-bold">Sponsors</h2>
-      <Sponsors />
+      <Sponsors /> */}
       <h2 className="mt-5 text-2xl font-bold">
-        Boilerplate Code for Your Next.js Project with Tailwind CSS
+        What is Onchain Hyper-Personalization?
       </h2>
       <p className="text-base">
         <span role="img" aria-label="rocket">
           🚀
         </span>{' '}
-        Next.js Boilerplate is a developer-friendly starter code for Next.js
-        projects, built with Tailwind CSS, and TypeScript.{' '}
-        <span role="img" aria-label="zap">
+        Onchain Hyper-Personalization leverages onchain data to deliver
+        personalized product recommendations. Our Shopify App allows you to cast
+        hyper-personalized Farcaster frames, ensuring your products reach the
+        right audience at the right time.{' '}
+        {/* <span role="img" aria-label="zap">
           ⚡️
         </span>{' '}
         Made with developer experience first: Next.js, TypeScript, ESLint,
@@ -92,7 +92,119 @@ export default function Index() {
           Better Stack
         </a>
         , Monitoring as Code with Checkly, Storybook, Multi-language (i18n), and
-        more.
+        more. */}
+      </p>
+      <img
+        className="mt-5"
+        src="https://i.imgur.com/HwF6LA3.gif"
+        alt="Onchain Hyper-Personalization"
+      />
+      <h2 className="mt-5 text-2xl font-bold">How It Works</h2>
+      <ul className="ml-5 list-disc">
+        <li>
+          Track Activity: Users track their activities on platforms like Strava.
+        </li>
+        <li>
+          Attest Onchain: They use Receipts.xyz to attest to their activities
+          onchain using EAS.
+        </li>
+        <li>
+          Create Frames: Merchants use our Shopify App to create and cast
+          personalized Farcaster frames based on users&apos; onchain activity.
+        </li>
+        <li>
+          Personalized Recommendations: Users see these frames on Farcaster,
+          showcasing products tailored to their interests and activities.
+        </li>
+      </ul>
+      <h2 className="mt-5 text-2xl font-bold">Real-World Example</h2>
+      <p className="text-base">
+        <span role="img" aria-label="rocket">
+          👩‍💻
+        </span>{' '}
+        Imagine Alice from Nike launching a new line of fitness products. Using
+        Target Onchain, Alice creates a frame in the Shopify Admin, selects the
+        products that will be recommended their customers, and finally cast it
+        on Farcaster.{' '}
+      </p>
+      <img
+        className="mt-5"
+        src="https://i.imgur.com/gl0jFpZ.gif"
+        alt="Onchain Hyper-Personalization"
+      />
+      <p className="text-base">
+        <span role="img" aria-label="rocket">
+          🎯
+        </span>{' '}
+        Bob, a loyal customer and runner, tracks his runs on Strava and attests
+        to them onchain using Receipts.xyz. Nike uses the Onchain
+        Hyper-Personalization Shopify App to create a Farcaster frame showcasing
+        their latest running shoes. When Bob checks Farcaster, he sees a
+        personalized recommendation for running shoes based on his onchain data.{' '}
+      </p>
+      <img
+        className="mt-5"
+        src="https://i.imgur.com/0ovFAvg.gif"
+        alt="Onchain Hyper-Personalization"
+      />
+      <h2 className="mt-5 text-2xl font-bold">Key Features</h2>
+      <ul className="ml-5 list-disc">
+        <li>
+          Customizable Frames: Create and customize Farcaster frames from your
+          Shopify admin panel.
+        </li>
+        <li>
+          Onchain Data Integration: Use onchain activity data to tailor product
+          recommendations.
+        </li>
+        <li>
+          Real-Time Updates: Ensure recommendations are up-to-date with
+          users&apos; latest onchain activities.
+        </li>
+        <li>
+          Analytics Dashboard: Track frame performance and understand customer
+          engagement.
+        </li>
+      </ul>
+      <h2 className="mt-5 text-2xl font-bold">
+        Why Choose Onchain Hyper-Personalization?
+      </h2>
+      <ul className="ml-5 list-disc">
+        <li>
+          Increased Engagement: Show customers the products they are most likely
+          to be interested in.
+        </li>
+        <li>
+          Higher Conversion Rates: Personalized recommendations lead to better
+          conversion rates.
+        </li>
+        <li>
+          Enhanced Customer Experience: Provide a tailored shopping experience
+          for your users.
+        </li>
+      </ul>
+      <h2 className="mt-5 text-2xl font-bold">Get Started</h2>
+      <p>Ready to take your product recommendations to the next level? </p>
+      <button
+        className="text-blue-700 hover:border-b-2 hover:border-blue-700"
+        type="button"
+      >
+        <a
+          href="https://apps.shopify.com/target-onchain"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Install Target Onchain
+        </a>
+      </button>
+      <p>
+        Have questions or need help? Reach out to us at{' '}
+        <a
+          className="text-blue-700 hover:border-b-2 hover:border-blue-700"
+          href="mailto:gonzalomelov@gmail.com"
+        >
+          Email us!
+        </a>
       </p>
     </>
   );
