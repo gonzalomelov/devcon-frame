@@ -17,11 +17,11 @@ export default function TermsAndConditions() {
 
   return (
     <>
-      <h1 className="text-3xl font-bold">Terms of Service</h1>
+      <h1 className="text-3xl font-bold">Terms and Conditions</h1>
       <p>Last Updated: 18/6/2024</p>
       <p>
         Welcome to the Onchain Hyper-Personalization Shopify App. Please read
-        these Terms of Service (&quot;Terms&quot;) carefully before using our
+        these Terms and Conditions (&quot;Terms&quot;) carefully before using
         services. By using our app, you agree to be bound by these Terms.
       </p>
       <h2>1. Acceptance of Terms</h2>
