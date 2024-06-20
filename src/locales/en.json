@@ -1,7 +1,7 @@
 {
   "RootLayout": {
     "home_link": "Home",
-    "about_link": "About",
+    "support_link": "Support",
     "guestbook_link": "Guestbook",
     "portfolio_link": "Portfolio",
     "terms_and_conditions_link": "Terms and Conditions",
@@ -28,10 +28,10 @@
     "body": "Body",
     "save": "Save"
   },
-  "About": {
-    "meta_title": "About",
-    "meta_description": "About page description",
-    "about_paragraph": "Welcome to our About page! We are a team of passionate individuals dedicated to creating amazing software.",
+  "Support": {
+    "meta_title": "Support",
+    "meta_description": "Support page description",
+    "support_paragraph": "Welcome to our Support page!",
     "translation_powered_by": "Translation powered by"
   },
   "TermsAndConditions": {

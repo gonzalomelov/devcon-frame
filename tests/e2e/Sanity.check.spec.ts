@@ -27,14 +27,14 @@ test.describe('Sanity', () => {
       ).toBeVisible();
     });
 
-    test('should navigate to the about page', async ({ page }) => {
+    test('should navigate to the support page', async ({ page }) => {
       await page.goto(targetUrl);
 
-      await page.getByRole('link', { name: 'About' }).click();
-      await expect(page).toHaveURL(/about$/);
+      await page.getByRole('link', { name: 'Support' }).click();
+      await expect(page).toHaveURL(/support$/);
 
       await expect(
-        page.getByText('Welcome to our About page', { exact: false }),
+        page.getByText('Welcome to our Support page', { exact: false }),
       ).toBeVisible();
     });
 

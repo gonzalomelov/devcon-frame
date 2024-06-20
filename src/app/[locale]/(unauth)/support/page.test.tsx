@@ -3,18 +3,18 @@ import { NextIntlClientProvider } from 'next-intl';
 
 import messages from '@/locales/en.json';
 
-import About from './page';
+import Support from './page';
 
-describe('About page', () => {
+describe('Support page', () => {
   describe('Render method', () => {
-    it('should have a text starting with `Welcome to our About page`', () => {
+    it('should have a text starting with `Welcome to our Support page`', () => {
       render(
         <NextIntlClientProvider locale="en" messages={messages}>
-          <About />
+          <Support />
         </NextIntlClientProvider>,
       );
 
-      const paragraph = screen.getByText(/Welcome to our About page/);
+      const paragraph = screen.getByText(/Welcome to our Support page/);
 
       expect(paragraph).toBeInTheDocument();
     });

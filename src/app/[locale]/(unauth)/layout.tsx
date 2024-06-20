@@ -18,14 +18,14 @@ export default function Layout(props: { children: React.ReactNode }) {
               {t('home_link')}
             </Link>
           </li>
-          {/* <li>
+          <li>
             <Link
-              href="/about/"
+              href="/support/"
               className="border-none text-gray-700 hover:text-gray-900"
             >
-              {t('about_link')}
+              {t('support_link')}
             </Link>
-          </li> */}
+          </li>
           {/* <li>
             <Link
               href="/guestbook/"

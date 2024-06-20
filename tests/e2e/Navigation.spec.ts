@@ -15,16 +15,16 @@ test.describe('Navigation', () => {
       await percySnapshot(page, 'Homepage');
     });
 
-    test('should take screenshot of the about page', async ({ page }) => {
-      await page.goto('/about');
+    test('should take screenshot of the support page', async ({ page }) => {
+      await page.goto('/support');
 
       await expect(
         page.getByRole('link', {
-          name: 'About',
+          name: 'Support',
         }),
       ).toBeVisible();
 
-      await percySnapshot(page, 'About');
+      await percySnapshot(page, 'Support');
     });
   });
 });

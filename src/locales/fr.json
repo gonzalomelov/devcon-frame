@@ -1,7 +1,7 @@
 {
   "RootLayout": {
     "home_link": "Accueil",
-    "about_link": "A propos",
+    "support_link": "A propos",
     "guestbook_link": "Livre d'or",
     "portfolio_link": "Portfolio",
     "sign_in_link": "Se connecter",
@@ -27,10 +27,10 @@
     "body": "Message",
     "save": "Sauvegarder"
   },
-  "About": {
+  "Support": {
     "meta_title": "A propos",
     "meta_description": "A propos description",
-    "about_paragraph": "Bienvenue sur notre page À propos ! Nous sommes une équipe de passionnés et dévoués à la création de logiciels.",
+    "support_paragraph": "Bienvenue sur notre page À propos ! Nous sommes une équipe de passionnés et dévoués à la création de logiciels.",
     "translation_powered_by": "Traduction propulsée par"
   },
   "Portfolio": {
