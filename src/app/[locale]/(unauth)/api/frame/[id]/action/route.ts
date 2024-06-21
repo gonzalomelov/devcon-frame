@@ -226,12 +226,13 @@ export const POST = async (request: Request) => {
       url: productUrl,
     });
 
-    const match = /gid:\/\/shopify\/ProductVariant\/([0-9]+)/.exec(
-      recommendedProduct!.variantId,
-    );
+    // const match = /gid:\/\/shopify\/ProductVariant\/([0-9]+)/.exec(
+    //   recommendedProduct!.variantId,
+    // );
 
-    if (match) {
-      const cartUrl = `https://${frame!.shop}/cart/${match[1]}:1`;
+    // if (match) {
+    if (recommendedProduct!.variantId) {
+      const cartUrl = `https://${frame!.shop}/cart/${recommendedProduct!.variantId}:1`;
 
       buttons.push({
         text: 'Buy',
