@@ -1,3 +1,10 @@
+## [1.5.1](https://github.com/gonzalomelov/target-onchain/compare/v1.5.0...v1.5.1) (2024-06-21)
+
+
+### Bug Fixes
+
+* get rid of variantId uri ([13dd1e5](https://github.com/gonzalomelov/target-onchain/commit/13dd1e55476db8d8a0d8de79f7b2cc710f367f46))
+
 # [1.5.0](https://github.com/gonzalomelov/target-onchain/compare/v1.4.0...v1.5.0) (2024-06-20)
 
 
