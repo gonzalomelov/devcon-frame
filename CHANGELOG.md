@@ -1,3 +1,10 @@
+## [1.7.1](https://github.com/gonzalomelov/target-onchain/compare/v1.7.0...v1.7.1) (2024-06-22)
+
+
+### Bug Fixes
+
+* show correct product price ([65ad5c3](https://github.com/gonzalomelov/target-onchain/commit/65ad5c33bdcdca7ce95ac494c57c150f5bc32fd7))
+
 # [1.7.0](https://github.com/gonzalomelov/target-onchain/compare/v1.6.1...v1.7.0) (2024-06-22)
 
 
