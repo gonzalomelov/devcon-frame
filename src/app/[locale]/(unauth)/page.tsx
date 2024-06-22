@@ -94,6 +94,12 @@ export default function Index() {
         , Monitoring as Code with Checkly, Storybook, Multi-language (i18n), and
         more. */}
       </p>
+      {/*
+        We are using <img> here because next/image cannot be
+        used in server-side code within ImageResponse. This
+        is necessary to generate dynamic images on the server.
+      */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         className="mt-5"
         src="https://i.imgur.com/HwF6LA3.gif"
@@ -127,6 +133,12 @@ export default function Index() {
         products that will be recommended their customers, and finally cast it
         on Farcaster.{' '}
       </p>
+      {/*
+        We are using <img> here because next/image cannot be
+        used in server-side code within ImageResponse. This
+        is necessary to generate dynamic images on the server.
+      */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         className="mt-5"
         src="https://i.imgur.com/gl0jFpZ.gif"
@@ -142,6 +154,12 @@ export default function Index() {
         their latest running shoes. When Bob checks Farcaster, he sees a
         personalized recommendation for running shoes based on his onchain data.{' '}
       </p>
+      {/*
+        We are using <img> here because next/image cannot be
+        used in server-side code within ImageResponse. This
+        is necessary to generate dynamic images on the server.
+      */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         className="mt-5"
         src="https://i.imgur.com/0ovFAvg.gif"

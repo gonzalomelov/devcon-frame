@@ -24,6 +24,12 @@ export async function GET(req: Request) {
             display: 'flex',
           }}
         >
+          {/*
+            We are using <img> here because next/image cannot be
+            used in server-side code within ImageResponse. This
+            is necessary to generate dynamic images on the server.
+          */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={url} alt="Product Frame" width={600} height={630} />
         </div>
         <div
@@ -61,6 +67,9 @@ export async function GET(req: Request) {
     {
       width: 1200,
       height: 630,
+      // headers: {
+      //   'Cache-Control': 'max-age=3600',
+      // },
     },
   );
 }
