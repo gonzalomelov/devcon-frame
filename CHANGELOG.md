@@ -1,3 +1,10 @@
+# [1.6.0](https://github.com/gonzalomelov/target-onchain/compare/v1.5.1...v1.6.0) (2024-06-22)
+
+
+### Features
+
+* add dev parameter to allow merchants test the frame ([32fed5f](https://github.com/gonzalomelov/target-onchain/commit/32fed5f914e9115b057e7e59dabaa09dadbba899))
+
 ## [1.5.1](https://github.com/gonzalomelov/target-onchain/compare/v1.5.0...v1.5.1) (2024-06-21)
 
 
