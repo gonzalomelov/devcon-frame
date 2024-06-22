@@ -162,11 +162,6 @@ export const POST = async (req: Request) => {
     },
   ];
 
-  // const match = /gid:\/\/shopify\/ProductVariant\/([0-9]+)/.exec(
-  //   recommendedProduct!.variantId,
-  // );
-
-  // if (match) {
   if (recommendedProduct!.variantId) {
     buttons.push({
       action: 'link',
