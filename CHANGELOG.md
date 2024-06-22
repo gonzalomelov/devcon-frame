@@ -1,3 +1,10 @@
+# [1.8.0](https://github.com/gonzalomelov/target-onchain/compare/v1.7.1...v1.8.0) (2024-06-22)
+
+
+### Features
+
+* add new matching criteria ([053f226](https://github.com/gonzalomelov/target-onchain/commit/053f22631d8da544b293bcd754eec8a0d863b641))
+
 ## [1.7.1](https://github.com/gonzalomelov/target-onchain/compare/v1.7.0...v1.7.1) (2024-06-22)
 
 
