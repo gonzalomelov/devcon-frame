@@ -39,26 +39,26 @@ export const GET = async (req: Request) => {
 
   const [frame] = frames;
 
-  const frameResponse = getFrameHtmlResponse({
-    buttons: [
-      {
-        action: 'post',
-        label: frame!.button,
-        target: `${getBaseUrl()}/api/frame/${frameId}/action`,
+  return new NextResponse(
+    getFrameHtmlResponse({
+      buttons: [
+        {
+          action: 'post',
+          label: frame!.button,
+          target: `${getBaseUrl()}/api/frame/${frameId}/action`,
+        },
+      ],
+      image: {
+        src: frame!.image,
       },
-    ],
-    image: {
-      src: frame!.image,
-    },
-    ...(dev && {
-      input: {
-        text: 'Wallet address to test',
-      },
+      ...(dev && {
+        input: {
+          text: 'REQUIRED: Test wallet address',
+        },
+      }),
+      ogDescription: frame!.title,
+      ogTitle: 'Target Onchain',
+      postUrl: `${getBaseUrl()}/api/frame`,
     }),
-    ogDescription: frame!.title,
-    ogTitle: 'Target Onchain',
-    postUrl: `${getBaseUrl()}/api/frame`,
-  });
-
-  return new NextResponse(frameResponse);
+  );
 };
