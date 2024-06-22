@@ -29,6 +29,9 @@ export const productSchema = mysqlTable('Product', {
   shop: varchar('shop', { length: 255 }).notNull(),
   handle: varchar('handle', { length: 255 }).notNull(),
   variantId: varchar('variantId', { length: 255 }).notNull(),
+  variantFormattedPrice: varchar('variantFormattedPrice', {
+    length: 255,
+  }).notNull(),
   alt: text('alt').notNull(),
   image: varchar('image', { length: 255 }).notNull(),
   createdAt: int('createdAt').default(0).notNull(),

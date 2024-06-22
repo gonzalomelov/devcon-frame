@@ -182,7 +182,7 @@ export const POST = async (req: Request) => {
     getFrameHtmlResponse({
       buttons,
       image: {
-        src: `${getBaseUrl()}/api/og?title=${recommendedProduct!.title}&subtitle=${recommendedProduct!.description}&content=$100&url=${recommendedProduct!.image}&width=600`,
+        src: `${getBaseUrl()}/api/og?title=${recommendedProduct!.title}&subtitle=${recommendedProduct!.description}&content=${recommendedProduct!.variantFormattedPrice}&url=${recommendedProduct!.image}&width=600`,
       },
       ogDescription: recommendedProduct!.title,
       ogTitle: 'Target Onchain',
