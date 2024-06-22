@@ -134,7 +134,10 @@ export const POST = async (req: Request) => {
   const valid = await verifyReceiptsRunningAttestation(accountAddress);
 
   // Get products
-  const products = await db.select().from(productSchema);
+  const products = await db
+    .select()
+    .from(productSchema)
+    .where(eq(productSchema.shop, frame!.shop));
 
   // Recommend product/s based on onchain data
   let recommendedProduct;
