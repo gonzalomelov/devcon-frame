@@ -1,6 +1,7 @@
 import { getFrameHtmlResponse } from '@coinbase/onchainkit/frame';
 import { eq } from 'drizzle-orm';
 import { NextResponse } from 'next/server';
+import { URL } from 'url';
 
 import { db } from '@/libs/DB';
 import { logger } from '@/libs/Logger';
@@ -8,7 +9,9 @@ import { frameSchema } from '@/models/Schema';
 import { defaultErrorFrame, getBaseUrl } from '@/utils/Helpers';
 
 export const GET = async (req: Request) => {
-  const urlParts = req.url.split('/');
+  const url = new URL(req.url);
+  const dev = url.searchParams.get('dev') === 'true';
+  const urlParts = url.pathname.split('/');
   const idPart = urlParts[urlParts.length - 2];
 
   if (!idPart) {
@@ -36,24 +39,26 @@ export const GET = async (req: Request) => {
 
   const [frame] = frames;
 
-  return new NextResponse(
-    getFrameHtmlResponse({
-      buttons: [
-        {
-          action: 'post',
-          label: frame!.button,
-          target: `${getBaseUrl()}/api/frame/${frameId}/action`,
-        },
-      ],
-      image: {
-        src: frame!.image,
+  const frameResponse = getFrameHtmlResponse({
+    buttons: [
+      {
+        action: 'post',
+        label: frame!.button,
+        target: `${getBaseUrl()}/api/frame/${frameId}/action`,
       },
+    ],
+    image: {
+      src: frame!.image,
+    },
+    ...(dev && {
       input: {
         text: 'Wallet address to test',
       },
-      ogDescription: frame!.title,
-      ogTitle: 'Target Onchain',
-      postUrl: `${getBaseUrl()}/api/frame`,
     }),
-  );
+    ogDescription: frame!.title,
+    ogTitle: 'Target Onchain',
+    postUrl: `${getBaseUrl()}/api/frame`,
+  });
+
+  return new NextResponse(frameResponse);
 };
