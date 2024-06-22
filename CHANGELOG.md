@@ -1,3 +1,10 @@
+## [1.6.1](https://github.com/gonzalomelov/target-onchain/compare/v1.6.0...v1.6.1) (2024-06-22)
+
+
+### Bug Fixes
+
+* only recommend products from the specific shop ([6afbff8](https://github.com/gonzalomelov/target-onchain/commit/6afbff85ea1e27ecbb2036d1dee7cead3e706c17))
+
 # [1.6.0](https://github.com/gonzalomelov/target-onchain/compare/v1.5.1...v1.6.0) (2024-06-22)
 
 
