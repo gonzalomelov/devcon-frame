@@ -1,3 +1,11 @@
+import type {
+  FrameButtonMetadata,
+  FrameRequest,
+} from '@coinbase/onchainkit/frame';
+import {
+  getFrameHtmlResponse,
+  getFrameMessage,
+} from '@coinbase/onchainkit/frame';
 import { eq } from 'drizzle-orm';
 import { NextResponse } from 'next/server';
 
@@ -5,67 +13,7 @@ import { db } from '@/libs/DB';
 import { Env } from '@/libs/Env';
 import { logger } from '@/libs/Logger';
 import { frameSchema, productSchema } from '@/models/Schema';
-import { getBaseUrl } from '@/utils/Helpers';
-import { FarcasterMessageValidation } from '@/validations/FarcasterMessageValidation';
-
-const mainPageBody = `
-<div>
-        <h1>
-          Help build a trustful decentralized identity infrastructure ⛓️
-        </h1>
-        <p>
-          Verify your Farcaster account and claim your Gitcoin Passport stamp to improve your humanity and reputation score!
-        </p>
-        <p>
-            Go to <a href='https://warpcast.com/ceciliaeiraldi92/0x984ee840'>Warpcast</a> and complete the steps directly on the Frame!
-        </p>
-    </div>
-`;
-
-interface Button {
-  text: string;
-  action: 'link' | 'post';
-  url: string;
-}
-
-const pageFromTemplateWithButtons = (
-  imageUrl: string,
-  title: string,
-  body: string,
-  buttons: Button[] = [],
-): string => {
-  const buttonMetaTags = buttons
-    .map((button, index) => {
-      const buttonNumber = index + 1;
-      return `
-      <meta property='fc:frame:button:${buttonNumber}' content='${button.text}' />
-      <meta property='fc:frame:button:${buttonNumber}:action' content='${button.action}' />
-      <meta property='fc:frame:button:${buttonNumber}:target' content='${button.url}' />
-      <meta property='fc:frame:button:${buttonNumber}:post_url' content='${button.url}' />
-    `;
-    })
-    .join('\n');
-
-  return `
-<!DOCTYPE html>
-<html lang='en'>
-<head>
-    <meta charset='utf-8' />
-    <meta name='viewport' content='width=device-width, initial-scale=1' />
-    <meta name='next-size-adjust' />
-    <meta property='fc:frame' content='vNext' />
-    <meta property='fc:frame:image' content='${imageUrl}' />
-    ${buttonMetaTags}
-    <meta property='og:title' content='${title}' />
-    <meta property='og:image' content='${imageUrl}' />
-    <title>${title}</title>
-</head>
-<body>
-    ${body}
-</body>
-</html>
-  `;
-};
+import { defaultErrorFrame, getBaseUrl } from '@/utils/Helpers';
 
 export type Attestation = {
   recipient: string;
@@ -132,132 +80,112 @@ const verifyReceiptsRunningAttestation = async (
   return validAttestations.length > 0;
 };
 
-export const POST = async (request: Request) => {
-  const json = await request.json();
+export const POST = async (req: Request) => {
+  // Validate frame and get account address
+  let accountAddress: string | undefined = '';
 
-  const parse = FarcasterMessageValidation.safeParse(json);
+  const body: FrameRequest = await req.json();
 
-  if (!parse.success) {
-    return NextResponse.json(parse.error.format(), { status: 422 });
+  const { isValid, message } = await getFrameMessage(body, {
+    neynarApiKey: Env.NEYNAR_API_KEY,
+  });
+
+  if (!isValid) {
+    logger.info('Message not valid');
+    return new NextResponse(defaultErrorFrame);
   }
 
-  try {
-    // Get the user wallet
-    const response = await fetch(`${Env.NEYNAR_URL}/farcaster/frame/validate`, {
-      method: 'POST',
-      headers: {
-        accept: 'application/json',
-        api_key: Env.NEYNAR_API_KEY,
-        'content-type': 'application/json',
-      },
-      body: JSON.stringify({
-        cast_reaction_context: true,
-        follow_context: true,
-        signer_context: true,
-        message_bytes_in_hex: parse.data.trustedData.messageBytes,
-      }),
-    });
+  const dev = !!message?.input;
 
-    const trustedData = await response.json();
+  accountAddress =
+    message?.input ?? message?.interactor?.verified_accounts?.[0] ?? '';
 
-    const {
-      action: {
-        url,
-        interactor: {
-          // fid,
-          verified_addresses: { eth_addresses: ethAddresses },
-        },
-      },
-    } = trustedData;
+  // Get frame
+  const url = new URL(req.url);
+  const urlParts = url.pathname.split('/');
+  const idPart = urlParts[urlParts.length - 2];
 
-    const urlParts = url.split('/');
-    const idPart = urlParts[urlParts.length - 2];
+  if (!idPart) {
+    logger.info('Invalid URL structure', { idPart });
+    return new NextResponse(defaultErrorFrame);
+  }
 
-    if (!idPart) {
-      return new NextResponse('Invalid URL structure', { status: 400 });
-    }
+  const frameId = parseInt(idPart, 10);
 
-    const frameId = parseInt(idPart, 10);
+  if (Number.isNaN(frameId)) {
+    logger.info('Invalid ID', { idPart });
+    return new NextResponse(defaultErrorFrame);
+  }
 
-    if (Number.isNaN(frameId)) {
-      return new NextResponse('Invalid ID', { status: 400 });
-    }
+  const frames = await db
+    .select()
+    .from(frameSchema)
+    .where(eq(frameSchema.id, frameId))
+    .limit(1);
 
-    const frames = await db
-      .select()
-      .from(frameSchema)
-      .where(eq(frameSchema.id, frameId))
-      .limit(1);
+  if (frames.length === 0) {
+    logger.info('Frame not found', { frameId });
+    return new NextResponse(defaultErrorFrame);
+  }
 
-    if (frames.length === 0) {
-      return new NextResponse('Frame not found', { status: 404 });
-    }
+  const [frame] = frames;
 
-    const [frame] = frames;
+  // Get onchain data
+  const valid = await verifyReceiptsRunningAttestation(accountAddress);
 
-    // Get onchain data
-    const valid = await verifyReceiptsRunningAttestation(ethAddresses[0]!);
+  // Get products
+  const products = await db.select().from(productSchema);
 
-    // Get products
-    const products = await db.select().from(productSchema);
-
-    // Recommend product/s based on onchain data
-    let recommendedProduct;
-    if (valid) {
-      recommendedProduct = products.find((product) =>
-        /Run|Running|Jog/i.test(product.description),
-      );
-      if (!recommendedProduct) {
-        const randomIndex = Math.floor(Math.random() * products.length);
-        recommendedProduct = products[randomIndex];
-      }
-    } else {
+  // Recommend product/s based on onchain data
+  let recommendedProduct;
+  if (valid) {
+    recommendedProduct = products.find((product) =>
+      /Run|Running|Jog/i.test(product.description),
+    );
+    if (!recommendedProduct) {
       const randomIndex = Math.floor(Math.random() * products.length);
       recommendedProduct = products[randomIndex];
     }
-
-    const buttons: Button[] = [];
-
-    const productUrl = `https://${frame!.shop}/products/${recommendedProduct!.handle}`;
-
-    buttons.push({
-      text: 'View',
-      action: 'link',
-      url: productUrl,
-    });
-
-    // const match = /gid:\/\/shopify\/ProductVariant\/([0-9]+)/.exec(
-    //   recommendedProduct!.variantId,
-    // );
-
-    // if (match) {
-    if (recommendedProduct!.variantId) {
-      const cartUrl = `https://${frame!.shop}/cart/${recommendedProduct!.variantId}:1`;
-
-      buttons.push({
-        text: 'Buy',
-        action: 'link',
-        url: cartUrl,
-      });
-    }
-
-    const htmlContent = pageFromTemplateWithButtons(
-      `${getBaseUrl()}/api/og?title=${recommendedProduct!.title}&subtitle=${recommendedProduct!.description}&content=$100&url=${recommendedProduct!.image}&width=600`,
-      recommendedProduct!.title,
-      mainPageBody,
-      buttons,
-    );
-
-    return new NextResponse(htmlContent, {
-      headers: {
-        'Content-Type': 'text/html',
-      },
-    });
-  } catch (error) {
-    // FIXME: Return the starting frame
-
-    logger.error(error, 'An error occurred while handling the frame action');
-
-    return NextResponse.json({}, { status: 500 });
+  } else {
+    const randomIndex = Math.floor(Math.random() * products.length);
+    recommendedProduct = products[randomIndex];
   }
+
+  const buttons: [FrameButtonMetadata, ...FrameButtonMetadata[]] = [
+    {
+      action: 'link',
+      label: 'View',
+      target: `https://${frame!.shop}/products/${recommendedProduct!.handle}`,
+    },
+  ];
+
+  // const match = /gid:\/\/shopify\/ProductVariant\/([0-9]+)/.exec(
+  //   recommendedProduct!.variantId,
+  // );
+
+  // if (match) {
+  if (recommendedProduct!.variantId) {
+    buttons.push({
+      action: 'link',
+      label: 'Buy',
+      target: `https://${frame!.shop}/cart/${recommendedProduct!.variantId}:1`,
+    });
+  }
+
+  return new NextResponse(
+    getFrameHtmlResponse({
+      buttons,
+      image: {
+        src: `${getBaseUrl()}/api/og?title=${recommendedProduct!.title}&subtitle=${recommendedProduct!.description}&content=$100&url=${recommendedProduct!.image}&width=600`,
+      },
+      ...(dev && {
+        input: {
+          text: `${valid}`,
+        },
+      }),
+      ogDescription: recommendedProduct!.title,
+      ogTitle: 'Target Onchain',
+      postUrl: `${getBaseUrl()}/api/frame`,
+    }),
+  );
 };
