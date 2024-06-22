@@ -175,20 +175,30 @@ export const POST = async (req: Request) => {
     });
   }
 
+  if (dev) {
+    buttons.push({
+      action: 'post',
+      label: 'Explain',
+      target: `${getBaseUrl()}/api/frame/${frameId}/explain`,
+    });
+  }
+
   return new NextResponse(
     getFrameHtmlResponse({
       buttons,
       image: {
         src: `${getBaseUrl()}/api/og?title=${recommendedProduct!.title}&subtitle=${recommendedProduct!.description}&content=$100&url=${recommendedProduct!.image}&width=600`,
       },
-      ...(dev && {
-        input: {
-          text: `${valid}`,
-        },
-      }),
       ogDescription: recommendedProduct!.title,
       ogTitle: 'Target Onchain',
       postUrl: `${getBaseUrl()}/api/frame`,
+      ...(dev && {
+        state: {
+          description: valid
+            ? `Attestation found on Receipts.xyz for ${accountAddress}`
+            : `No attestation found on Receipts.xyz for ${accountAddress}. A random product is recommended.`,
+        },
+      }),
     }),
   );
 };
