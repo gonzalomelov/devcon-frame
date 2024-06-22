@@ -39,7 +39,7 @@ const verifyReceiptsRunningAttestation = async (
     query Attestations {
       attestations(
         where: {
-          schemaId: { equals: "${Env.RECEIPTS_XYZ_NEW_USER_SCHEMA}" },
+          schemaId: { equals: "${Env.RECEIPTS_XYZ_ALL_TIME_RUNNING_SCHEMA}" },
           attester: { equals: "${Env.RECEIPTS_XYZ_ATTESTER}" },
           recipient: { equals: "${address}" }
         }
@@ -74,10 +74,10 @@ const verifyReceiptsRunningAttestation = async (
     (attestation) =>
       attestation.revocationTime === 0 &&
       attestation.expirationTime === 0 &&
-      attestation.schema.id === Env.RECEIPTS_XYZ_NEW_USER_SCHEMA,
+      attestation.schema.id === Env.RECEIPTS_XYZ_ALL_TIME_RUNNING_SCHEMA,
   );
 
-  return validAttestations.length > 0;
+  return validAttestations.length >= 10;
 };
 
 export const POST = async (req: Request) => {
@@ -141,17 +141,21 @@ export const POST = async (req: Request) => {
 
   // Recommend product/s based on onchain data
   let recommendedProduct;
+  let imageSrc;
   if (valid) {
     recommendedProduct = products.find((product) =>
       /Run|Running|Jog/i.test(product.description),
     );
-    if (!recommendedProduct) {
-      const randomIndex = Math.floor(Math.random() * products.length);
-      recommendedProduct = products[randomIndex];
+
+    if (recommendedProduct) {
+      imageSrc = `${getBaseUrl()}/api/og?title=Congrats on your +10th run!&subtitle=You're now eligible to buy:&content=${recommendedProduct!.title}&url=${recommendedProduct!.image}&width=600`;
     }
-  } else {
+  }
+
+  if (!recommendedProduct) {
     const randomIndex = Math.floor(Math.random() * products.length);
     recommendedProduct = products[randomIndex];
+    imageSrc = `${getBaseUrl()}/api/og?title=${recommendedProduct!.title}&subtitle=${recommendedProduct!.description}&content=${recommendedProduct!.variantFormattedPrice}&url=${recommendedProduct!.image}&width=600`;
   }
 
   const buttons: [FrameButtonMetadata, ...FrameButtonMetadata[]] = [
@@ -182,7 +186,7 @@ export const POST = async (req: Request) => {
     getFrameHtmlResponse({
       buttons,
       image: {
-        src: `${getBaseUrl()}/api/og?title=${recommendedProduct!.title}&subtitle=${recommendedProduct!.description}&content=${recommendedProduct!.variantFormattedPrice}&url=${recommendedProduct!.image}&width=600`,
+        src: imageSrc!,
       },
       ogDescription: recommendedProduct!.title,
       ogTitle: 'Target Onchain',
@@ -190,8 +194,8 @@ export const POST = async (req: Request) => {
       ...(dev && {
         state: {
           description: valid
-            ? `Attestation found on Receipts.xyz for ${accountAddress}`
-            : `No attestation found on Receipts.xyz for ${accountAddress}. A random product is recommended.`,
+            ? `10 or more attestations found on Receipts.xyz for ${accountAddress}`
+            : `Not more than 10 attestations found on Receipts.xyz for ${accountAddress}. A random product is recommended.`,
         },
       }),
     }),

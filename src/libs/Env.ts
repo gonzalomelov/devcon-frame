@@ -13,6 +13,7 @@ export const Env = createEnv({
     BASE_EAS_SCAN_URL: z.string(),
     RECEIPTS_XYZ_ATTESTER: z.string(),
     RECEIPTS_XYZ_NEW_USER_SCHEMA: z.string(),
+    RECEIPTS_XYZ_ALL_TIME_RUNNING_SCHEMA: z.string(),
   },
   client: {
     NEXT_PUBLIC_APP_URL: z.string().optional(),
@@ -36,5 +37,7 @@ export const Env = createEnv({
     BASE_EAS_SCAN_URL: process.env.BASE_EAS_SCAN_URL,
     RECEIPTS_XYZ_ATTESTER: process.env.RECEIPTS_XYZ_ATTESTER,
     RECEIPTS_XYZ_NEW_USER_SCHEMA: process.env.RECEIPTS_XYZ_NEW_USER_SCHEMA,
+    RECEIPTS_XYZ_ALL_TIME_RUNNING_SCHEMA:
+      process.env.RECEIPTS_XYZ_ALL_TIME_RUNNING_SCHEMA,
   },
 });
