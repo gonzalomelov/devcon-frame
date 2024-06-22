@@ -1,3 +1,10 @@
+# [1.7.0](https://github.com/gonzalomelov/target-onchain/compare/v1.6.1...v1.7.0) (2024-06-22)
+
+
+### Features
+
+* show why a product is recommended in dev mode ([43e38b2](https://github.com/gonzalomelov/target-onchain/commit/43e38b2bb569df38196ce42f8135a05466de60ac))
+
 ## [1.6.1](https://github.com/gonzalomelov/target-onchain/compare/v1.6.0...v1.6.1) (2024-06-22)
 
 
