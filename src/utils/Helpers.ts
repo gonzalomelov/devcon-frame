@@ -1,3 +1,5 @@
+import { getFrameHtmlResponse } from '@coinbase/onchainkit/frame';
+
 import { AppConfig } from './AppConfig';
 
 export const getBaseUrl = () => {
@@ -19,3 +21,18 @@ export const getI18nPath = (url: string, locale: string) => {
 
   return `/${locale}${url}`;
 };
+
+export const defaultErrorFrame = getFrameHtmlResponse({
+  buttons: [
+    {
+      action: 'link',
+      label: 'Learn more',
+      target: getBaseUrl(),
+    },
+  ],
+  image: {
+    src: 'https://i.imgur.com/HwF6LA3.gif',
+  },
+  ogDescription: 'Onchain Hyper-Personalization Commerce',
+  ogTitle: 'Target Onchain',
+});
