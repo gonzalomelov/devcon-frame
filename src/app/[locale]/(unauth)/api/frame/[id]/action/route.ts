@@ -111,6 +111,20 @@ const verifyCoinbaseOnchainVerificationCountryResidenceAttestation = async (
   };
 };
 
+const verifyCoinbaseOnchainVerificationOneAttestation = async (
+  address: string,
+): Promise<{ valid: boolean; data: any }> => {
+  const attestations = await validAttestations(
+    address,
+    Env.COINBASE_ONCHAIN_VERIFICATION_ONE_SCHEMA,
+    Env.COINBASE_ONCHAIN_VERIFICATION_ATTESTER,
+  );
+  return {
+    valid: attestations.length > 0,
+    data: { attestation: attestations[0] },
+  };
+};
+
 export const POST = async (req: Request) => {
   // Validate frame and get account address
   let accountAddress: string | undefined = '';
@@ -169,7 +183,7 @@ export const POST = async (req: Request) => {
     const verification = await verifyReceiptsRunningAttestation(accountAddress);
     valid = verification.valid;
     explanation = valid
-      ? `10 or more attestations found on Receipts.xyz for ${accountAddress}`
+      ? `10 or more attestations found on Receipts.xyz for ${accountAddress}. A special product is recommended.`
       : `Not more than 10 attestations found on Receipts.xyz for ${accountAddress}. A random product is recommended.`;
   } else if (frame?.matchingCriteria === 'COINBASE_ONCHAIN_VERIFICATIONS') {
     const verification =
@@ -179,8 +193,15 @@ export const POST = async (req: Request) => {
     valid = verification.valid;
     data = verification.data;
     explanation = valid
-      ? `Country of residence verified for ${accountAddress} on Coinbase Onchain`
+      ? `Country of residence verified for ${accountAddress} on Coinbase Onchain. A product based on the country is recommended.`
       : `Country of residence not verified for ${accountAddress} on Coinbase Onchain. A random product is recommended.`;
+  } else if (frame?.matchingCriteria === 'COINBASE_ONCHAIN_VERIFICATIONS_ONE') {
+    const verification =
+      await verifyCoinbaseOnchainVerificationOneAttestation(accountAddress);
+    valid = verification.valid;
+    explanation = valid
+      ? `Coinbase One account member attestation for ${accountAddress}. A special product is recommended.`
+      : `No Coinbase One account member attestation for ${accountAddress}. A random product is recommended.`;
   } else {
     valid = false;
   }
@@ -202,8 +223,6 @@ export const POST = async (req: Request) => {
 
       if (recommendedProduct) {
         imageSrc = `${getBaseUrl()}/api/og?title=Congrats on your +10th run!&subtitle=You're now eligible to buy:&content=${recommendedProduct!.title}&url=${recommendedProduct!.image}&width=600`;
-
-        explanation = `10 or more attestations found on Receipts.xyz for ${accountAddress}`;
       }
     } else if (frame?.matchingCriteria === 'COINBASE_ONCHAIN_VERIFICATIONS') {
       const { attestation } = data;
@@ -227,6 +246,16 @@ export const POST = async (req: Request) => {
         } else {
           explanation = `Product not found for country of residence verified as ${country} for ${accountAddress} on Coinbase Onchain`;
         }
+      }
+    } else if (
+      frame?.matchingCriteria === 'COINBASE_ONCHAIN_VERIFICATIONS_ONE'
+    ) {
+      recommendedProduct = products.find((product) =>
+        /Special/i.test(product.description),
+      );
+
+      if (recommendedProduct) {
+        imageSrc = `${getBaseUrl()}/api/og?title=${recommendedProduct!.title}&subtitle=${recommendedProduct!.description}&content=${recommendedProduct!.variantFormattedPrice}&url=${recommendedProduct!.image}&width=600`;
       }
     }
   }

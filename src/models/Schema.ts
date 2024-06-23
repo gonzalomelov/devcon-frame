@@ -29,6 +29,7 @@ export const frameSchema = mysqlTable('Frame', {
   matchingCriteria: mysqlEnum('matchingCriteria', [
     'RECEIPTS_XYZ_ALL_TIME_RUNNING',
     'COINBASE_ONCHAIN_VERIFICATIONS',
+    'COINBASE_ONCHAIN_VERIFICATIONS_ONE',
     'ALL',
   ]),
 });
