@@ -1,3 +1,10 @@
+# [1.10.0](https://github.com/gonzalomelov/target-onchain/compare/v1.9.0...v1.10.0) (2024-06-23)
+
+
+### Features
+
+* support Coinbase One account member criteria ([ab7380e](https://github.com/gonzalomelov/target-onchain/commit/ab7380e2da00f04957ff33849dbc54f251426fcb))
+
 # [1.9.0](https://github.com/gonzalomelov/target-onchain/compare/v1.8.0...v1.9.0) (2024-06-23)
 
 
