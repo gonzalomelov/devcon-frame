@@ -1,3 +1,10 @@
+# [1.9.0](https://github.com/gonzalomelov/target-onchain/compare/v1.8.0...v1.9.0) (2024-06-23)
+
+
+### Features
+
+* support multiple matching criterias. Add Coinbase Onchain Verifications criteria ([9ac0467](https://github.com/gonzalomelov/target-onchain/commit/9ac04670b59abb6b71adf9eec7e41f8c071ec785))
+
 # [1.8.0](https://github.com/gonzalomelov/target-onchain/compare/v1.7.1...v1.8.0) (2024-06-22)
 
 
