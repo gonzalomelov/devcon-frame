@@ -6,6 +6,7 @@ import {
   getFrameHtmlResponse,
   getFrameMessage,
 } from '@coinbase/onchainkit/frame';
+import { SchemaEncoder } from '@ethereum-attestation-service/eas-sdk';
 import { eq } from 'drizzle-orm';
 import { NextResponse } from 'next/server';
 
@@ -32,15 +33,17 @@ export type EASQueryResponse = {
   };
 };
 
-const verifyReceiptsRunningAttestation = async (
+const validAttestations = async (
   address: string,
-): Promise<boolean> => {
+  schema: string,
+  attester: string,
+): Promise<Attestation[]> => {
   const query = `
     query Attestations {
       attestations(
         where: {
-          schemaId: { equals: "${Env.RECEIPTS_XYZ_ALL_TIME_RUNNING_SCHEMA}" },
-          attester: { equals: "${Env.RECEIPTS_XYZ_ATTESTER}" },
+          schemaId: { equals: "${schema}" },
+          attester: { equals: "${attester}" },
           recipient: { equals: "${address}" }
         }
       ) {
@@ -70,14 +73,42 @@ const verifyReceiptsRunningAttestation = async (
 
   const result: EASQueryResponse = await response.json();
 
-  const validAttestations = (result.data!.attestations || []).filter(
+  const attestations = (result.data!.attestations || []).filter(
     (attestation) =>
       attestation.revocationTime === 0 &&
       attestation.expirationTime === 0 &&
-      attestation.schema.id === Env.RECEIPTS_XYZ_ALL_TIME_RUNNING_SCHEMA,
+      attestation.schema.id === schema,
   );
 
-  return validAttestations.length >= 10;
+  return attestations;
+};
+
+const verifyReceiptsRunningAttestation = async (
+  address: string,
+): Promise<{ valid: boolean; data: any }> => {
+  const attestations = await validAttestations(
+    address,
+    Env.RECEIPTS_XYZ_ALL_TIME_RUNNING_SCHEMA,
+    Env.RECEIPTS_XYZ_ATTESTER,
+  );
+  return {
+    valid: attestations.length >= 10,
+    data: { count: attestations.length },
+  };
+};
+
+const verifyCoinbaseOnchainVerificationCountryResidenceAttestation = async (
+  address: string,
+): Promise<{ valid: boolean; data: any }> => {
+  const attestations = await validAttestations(
+    address,
+    Env.COINBASE_ONCHAIN_VERIFICATION_COUNTRY_RESIDENCE_SCHEMA,
+    Env.COINBASE_ONCHAIN_VERIFICATION_ATTESTER,
+  );
+  return {
+    valid: attestations.length > 0,
+    data: { attestation: attestations[0] },
+  };
 };
 
 export const POST = async (req: Request) => {
@@ -131,7 +162,28 @@ export const POST = async (req: Request) => {
   const [frame] = frames;
 
   // Get onchain data
-  const valid = await verifyReceiptsRunningAttestation(accountAddress);
+  let valid;
+  let data;
+  let explanation;
+  if (frame?.matchingCriteria === 'RECEIPTS_XYZ_ALL_TIME_RUNNING') {
+    const verification = await verifyReceiptsRunningAttestation(accountAddress);
+    valid = verification.valid;
+    explanation = valid
+      ? `10 or more attestations found on Receipts.xyz for ${accountAddress}`
+      : `Not more than 10 attestations found on Receipts.xyz for ${accountAddress}. A random product is recommended.`;
+  } else if (frame?.matchingCriteria === 'COINBASE_ONCHAIN_VERIFICATIONS') {
+    const verification =
+      await verifyCoinbaseOnchainVerificationCountryResidenceAttestation(
+        accountAddress,
+      );
+    valid = verification.valid;
+    data = verification.data;
+    explanation = valid
+      ? `Country of residence verified for ${accountAddress} on Coinbase Onchain`
+      : `Country of residence not verified for ${accountAddress} on Coinbase Onchain. A random product is recommended.`;
+  } else {
+    valid = false;
+  }
 
   // Get products
   const products = await db
@@ -143,12 +195,39 @@ export const POST = async (req: Request) => {
   let recommendedProduct;
   let imageSrc;
   if (valid) {
-    recommendedProduct = products.find((product) =>
-      /Run|Running|Jog/i.test(product.description),
-    );
+    if (frame?.matchingCriteria === 'RECEIPTS_XYZ_ALL_TIME_RUNNING') {
+      recommendedProduct = products.find((product) =>
+        /Run|Running|Jog/i.test(product.description),
+      );
 
-    if (recommendedProduct) {
-      imageSrc = `${getBaseUrl()}/api/og?title=Congrats on your +10th run!&subtitle=You're now eligible to buy:&content=${recommendedProduct!.title}&url=${recommendedProduct!.image}&width=600`;
+      if (recommendedProduct) {
+        imageSrc = `${getBaseUrl()}/api/og?title=Congrats on your +10th run!&subtitle=You're now eligible to buy:&content=${recommendedProduct!.title}&url=${recommendedProduct!.image}&width=600`;
+
+        explanation = `10 or more attestations found on Receipts.xyz for ${accountAddress}`;
+      }
+    } else if (frame?.matchingCriteria === 'COINBASE_ONCHAIN_VERIFICATIONS') {
+      const { attestation } = data;
+
+      const schema = 'string verifiedCountry';
+      const schemaEncoder = new SchemaEncoder(schema);
+
+      const decodedData = schemaEncoder.decodeData(attestation.data);
+
+      const country = decodedData[0]?.value.value;
+
+      if (country) {
+        recommendedProduct = products.find((product) =>
+          new RegExp(country as string, 'i').test(product.description),
+        );
+
+        if (recommendedProduct) {
+          imageSrc = `${getBaseUrl()}/api/og?title=${recommendedProduct!.title}&subtitle=${recommendedProduct!.description}&content=${recommendedProduct!.variantFormattedPrice}&url=${recommendedProduct!.image}&width=600`;
+
+          explanation = `Country of residence verified as ${country} for ${accountAddress} on Coinbase Onchain`;
+        } else {
+          explanation = `Product not found for country of residence verified as ${country} for ${accountAddress} on Coinbase Onchain`;
+        }
+      }
     }
   }
 
@@ -156,6 +235,7 @@ export const POST = async (req: Request) => {
     const randomIndex = Math.floor(Math.random() * products.length);
     recommendedProduct = products[randomIndex];
     imageSrc = `${getBaseUrl()}/api/og?title=${recommendedProduct!.title}&subtitle=${recommendedProduct!.description}&content=${recommendedProduct!.variantFormattedPrice}&url=${recommendedProduct!.image}&width=600`;
+    explanation = `No onchain data or matching product found for ${accountAddress}. A random product is recommended.`;
   }
 
   const buttons: [FrameButtonMetadata, ...FrameButtonMetadata[]] = [
@@ -182,22 +262,20 @@ export const POST = async (req: Request) => {
     });
   }
 
-  return new NextResponse(
-    getFrameHtmlResponse({
-      buttons,
-      image: {
-        src: imageSrc!,
+  const response = getFrameHtmlResponse({
+    buttons,
+    image: {
+      src: imageSrc!,
+    },
+    ogDescription: recommendedProduct!.title,
+    ogTitle: 'Target Onchain',
+    postUrl: `${getBaseUrl()}/api/frame`,
+    ...(dev && {
+      state: {
+        description: explanation,
       },
-      ogDescription: recommendedProduct!.title,
-      ogTitle: 'Target Onchain',
-      postUrl: `${getBaseUrl()}/api/frame`,
-      ...(dev && {
-        state: {
-          description: valid
-            ? `10 or more attestations found on Receipts.xyz for ${accountAddress}`
-            : `Not more than 10 attestations found on Receipts.xyz for ${accountAddress}. A random product is recommended.`,
-        },
-      }),
     }),
-  );
+  });
+
+  return new NextResponse(response);
 };

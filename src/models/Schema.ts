@@ -1,4 +1,10 @@
-import { int, mysqlTable, text, varchar } from 'drizzle-orm/mysql-core';
+import {
+  int,
+  mysqlEnum,
+  mysqlTable,
+  text,
+  varchar,
+} from 'drizzle-orm/mysql-core';
 
 export const guestbookSchema = mysqlTable('Guestbook', {
   id: int('id').primaryKey().autoincrement().notNull(),
@@ -20,6 +26,11 @@ export const frameSchema = mysqlTable('Frame', {
   createdAt: int('createdAt').default(0).notNull(),
   image: varchar('image', { length: 255 }).notNull(),
   button: varchar('button', { length: 255 }).notNull(),
+  matchingCriteria: mysqlEnum('matchingCriteria', [
+    'RECEIPTS_XYZ_ALL_TIME_RUNNING',
+    'COINBASE_ONCHAIN_VERIFICATIONS',
+    'ALL',
+  ]),
 });
 
 export const productSchema = mysqlTable('Product', {
