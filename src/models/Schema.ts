@@ -38,7 +38,7 @@ export const frameSchema = mysqlTable('Frame', {
 export const productSchema = mysqlTable('Product', {
   id: varchar('id', { length: 255 }).primaryKey().notNull(),
   title: varchar('title', { length: 255 }).notNull(),
-  description: varchar('description', { length: 255 }).notNull(),
+  description: text('description').notNull(),
   shop: varchar('shop', { length: 255 }).notNull(),
   handle: varchar('handle', { length: 255 }).notNull(),
   variantId: varchar('variantId', { length: 255 }).notNull(),
