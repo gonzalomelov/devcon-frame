@@ -38,7 +38,6 @@ const validAttestations = async (
   schema: string,
   attester: string,
 ): Promise<Attestation[]> => {
-  // // ############# USE EAS #############
   const query = `
     query Attestations {
       attestations(
@@ -75,7 +74,6 @@ const validAttestations = async (
   const result: QueryResponse = await response.json();
 
   const attestations = result.data!.attestations || [];
-  // // ############# USE EAS #############
 
   const filteredAttestations = attestations.filter(
     (attestation: Attestation) =>
