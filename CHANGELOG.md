@@ -1,3 +1,10 @@
+# [1.11.0](https://github.com/gonzalomelov/target-onchain/compare/v1.10.0...v1.11.0) (2024-06-26)
+
+
+### Features
+
+* add coinbase account matching criteria ([7cd5373](https://github.com/gonzalomelov/target-onchain/commit/7cd5373f6bb1337750808466a04fc496c9e41723))
+
 # [1.10.0](https://github.com/gonzalomelov/target-onchain/compare/v1.9.0...v1.10.0) (2024-06-23)
 
 
