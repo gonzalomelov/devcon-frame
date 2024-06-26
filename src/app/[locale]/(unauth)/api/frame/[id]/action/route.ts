@@ -27,7 +27,7 @@ export type Attestation = {
   decodedDataJson: string;
 };
 
-export type QueryResponse = {
+export type AttestationsQueryResponse = {
   data?: {
     attestations: Attestation[];
   };
@@ -76,7 +76,7 @@ const validAttestations = async (
     body: JSON.stringify({ query }),
   });
 
-  const result: QueryResponse = await response.json();
+  const result: AttestationsQueryResponse = await response.json();
 
   const attestations = result.data!.attestations || [];
 
