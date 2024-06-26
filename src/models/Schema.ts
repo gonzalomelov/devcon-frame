@@ -31,6 +31,7 @@ export const frameSchema = mysqlTable('Frame', {
     'COINBASE_ONCHAIN_VERIFICATIONS_COUNTRY',
     'COINBASE_ONCHAIN_VERIFICATIONS_ACCOUNT',
     'COINBASE_ONCHAIN_VERIFICATIONS_ONE',
+    'POAPS_OWNED',
     'ALL',
   ]),
 });

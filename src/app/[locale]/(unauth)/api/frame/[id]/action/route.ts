@@ -33,6 +33,55 @@ export type AttestationsQueryResponse = {
   };
 };
 
+export type Poap = {
+  eventId: string;
+  tokenId: string;
+  poapEvent: {
+    eventName: string;
+    description: string;
+  };
+};
+
+interface Data {
+  Poaps: { Poap: Poap[] };
+}
+
+interface PoapsQueryResponse {
+  data: Data;
+}
+
+export type Product = {
+  title: string;
+  description: string;
+};
+
+function extractKeywords(text: string): string[] {
+  return text.match(/\b(\w+)\b/g)?.map((word) => word.toLowerCase()) || [];
+}
+
+function countMatchedKeywords(poap: Poap, product: Product): number {
+  const poapKeywords = extractKeywords(
+    `${poap.poapEvent.eventName} ${poap.poapEvent.description}`,
+  );
+  const productKeywords = new Set(
+    extractKeywords(`${product.title} ${product.description}`),
+  );
+
+  // Count matches by checking each POAP keyword against product keywords
+  return poapKeywords.filter((keyword) => productKeywords.has(keyword)).length;
+}
+
+function recommendProducts(poap: Poap, products: Product[]): Product[] {
+  return products
+    .map((product) => ({
+      product,
+      matchCount: countMatchedKeywords(poap, product),
+    }))
+    .filter((item) => item.matchCount > 0)
+    .sort((a, b) => b.matchCount - a.matchCount)
+    .map((item) => item.product);
+}
+
 const validAttestations = async (
   address: string,
   schema?: string,
@@ -88,6 +137,38 @@ const validAttestations = async (
   );
 
   return filteredAttestations;
+};
+
+const validPoaps = async (address: string): Promise<Poap[]> => {
+  const query = `
+    query MyQuery {
+      Poaps(input: {filter: {owner: {_in: ["${address}"]}}, blockchain: ALL}) {
+        Poap {
+          eventId
+          tokenId
+          poapEvent {
+            eventName
+            description
+          }
+        }
+      }
+    }
+  `;
+
+  const response = await fetch('https://api.airstack.xyz/graphql', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: '1d57e7c0915094f04bba4d43db34dc413',
+    },
+    body: JSON.stringify({ query }),
+  });
+
+  const result: PoapsQueryResponse = await response.json();
+
+  const poaps = result.data!.Poaps.Poap || [];
+
+  return poaps;
 };
 
 const verifyReceiptsRunningAttestation = async (
@@ -146,6 +227,18 @@ const verifyCoinbaseOnchainVerificationOneAttestation = async (
   };
 };
 
+const verifyPoapsOwned = async (
+  address: string,
+): Promise<{ valid: boolean; data: any }> => {
+  const poaps = await validPoaps(address);
+  return {
+    valid: poaps.length > 0,
+    data: { poaps },
+  };
+};
+
+// Take into account old attestations
+
 type VerificationFunction = (
   address: string,
 ) => Promise<{ valid: boolean; data?: any }>;
@@ -185,6 +278,13 @@ const verificationMap: { [key: string]: VerificationMapEntry } = {
       `Coinbase One account member attestation for ${address}. A special product is recommended.`,
     failure: (address: string) =>
       `No Coinbase One account member attestation for ${address}. A random product is recommended.`,
+  },
+  POAPS_OWNED: {
+    verify: verifyPoapsOwned,
+    success: (address: string) =>
+      `POAPs owned by ${address}. A specific product might be recommended.`,
+    failure: (address: string) =>
+      `No POAPs owned by ${address}. A random product is recommended.`,
   },
 };
 
@@ -323,6 +423,22 @@ export const POST = async (req: Request) => {
       );
 
       if (recommendedProduct) {
+        imageSrc = `${getBaseUrl()}/api/og?title=${recommendedProduct!.title}&subtitle=${recommendedProduct!.description}&content=${recommendedProduct!.variantFormattedPrice}&url=${recommendedProduct!.image}&width=600`;
+      }
+    } else if (frame?.matchingCriteria === 'POAPS_OWNED') {
+      const { poaps } = data;
+
+      const recommendedProducts: Product[] = [];
+
+      poaps.forEach((poap: Poap) => {
+        recommendedProducts.push(...recommendProducts(poap, products));
+      });
+
+      if (recommendedProducts.length > 0) {
+        recommendedProduct = products.find(
+          (p) => p.title === recommendedProducts[0]!.title,
+        );
+
         imageSrc = `${getBaseUrl()}/api/og?title=${recommendedProduct!.title}&subtitle=${recommendedProduct!.description}&content=${recommendedProduct!.variantFormattedPrice}&url=${recommendedProduct!.image}&width=600`;
       }
     }
