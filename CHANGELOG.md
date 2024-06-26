@@ -1,3 +1,10 @@
+## [1.11.1](https://github.com/gonzalomelov/target-onchain/compare/v1.11.0...v1.11.1) (2024-06-26)
+
+
+### Bug Fixes
+
+* tests ([b5b0d31](https://github.com/gonzalomelov/target-onchain/commit/b5b0d317c376ebf4cdb7768f0d5b9ee2479a2fd7))
+
 # [1.11.0](https://github.com/gonzalomelov/target-onchain/compare/v1.10.0...v1.11.0) (2024-06-26)
 
 
