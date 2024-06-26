@@ -146,9 +146,63 @@ const verifyCoinbaseOnchainVerificationOneAttestation = async (
   };
 };
 
-// New
-// Airstack Poaps
-// Take into account old attestations
+type VerificationFunction = (
+  address: string,
+) => Promise<{ valid: boolean; data?: any }>;
+type MessageFunction = (address: string) => string;
+
+interface VerificationMapEntry {
+  verify: VerificationFunction;
+  success: MessageFunction;
+  failure: MessageFunction;
+}
+
+const verificationMap: { [key: string]: VerificationMapEntry } = {
+  RECEIPTS_XYZ_ALL_TIME_RUNNING: {
+    verify: verifyReceiptsRunningAttestation,
+    success: (address: string) =>
+      `10 or more attestations found on Receipts.xyz for ${address}. A special product is recommended.`,
+    failure: (address: string) =>
+      `Not more than 10 attestations found on Receipts.xyz for ${address}. A random product is recommended.`,
+  },
+  COINBASE_ONCHAIN_VERIFICATIONS_COUNTRY: {
+    verify: verifyCoinbaseOnchainVerificationCountryResidenceAttestation,
+    success: (address: string) =>
+      `Country of residence verified for ${address} on Coinbase Onchain. A product based on the country is recommended.`,
+    failure: (address: string) =>
+      `Country of residence not verified for ${address} on Coinbase Onchain. A random product is recommended.`,
+  },
+  COINBASE_ONCHAIN_VERIFICATIONS_ACCOUNT: {
+    verify: verifyCoinbaseOnchainVerificationAccountAttestation,
+    success: (address: string) =>
+      `Coinbase account member attestation for ${address}. A special product is recommended.`,
+    failure: (address: string) =>
+      `No Coinbase account member attestation for ${address}. A random product is recommended.`,
+  },
+  COINBASE_ONCHAIN_VERIFICATIONS_ONE: {
+    verify: verifyCoinbaseOnchainVerificationOneAttestation,
+    success: (address: string) =>
+      `Coinbase One account member attestation for ${address}. A special product is recommended.`,
+    failure: (address: string) =>
+      `No Coinbase One account member attestation for ${address}. A random product is recommended.`,
+  },
+};
+
+const processVerification = async (
+  matchingCriteria: string | undefined,
+  accountAddress: string,
+) => {
+  if (!matchingCriteria || !verificationMap[matchingCriteria]) {
+    return { valid: false, explanation: '', data: null };
+  }
+
+  const { verify, success, failure } = verificationMap[matchingCriteria]!;
+  const verification = await verify(accountAddress);
+  const { valid } = verification;
+  const explanation = valid ? success(accountAddress) : failure(accountAddress);
+
+  return { valid, explanation, data: verification.data };
+};
 
 export const POST = async (req: Request) => {
   // Validate frame and get account address
@@ -201,46 +255,12 @@ export const POST = async (req: Request) => {
   const [frame] = frames;
 
   // Get onchain data
-  let valid;
-  let data;
-  let explanation;
-  if (frame?.matchingCriteria === 'RECEIPTS_XYZ_ALL_TIME_RUNNING') {
-    const verification = await verifyReceiptsRunningAttestation(accountAddress);
-    valid = verification.valid;
-    explanation = valid
-      ? `10 or more attestations found on Receipts.xyz for ${accountAddress}. A special product is recommended.`
-      : `Not more than 10 attestations found on Receipts.xyz for ${accountAddress}. A random product is recommended.`;
-  } else if (
-    frame?.matchingCriteria === 'COINBASE_ONCHAIN_VERIFICATIONS_COUNTRY'
-  ) {
-    const verification =
-      await verifyCoinbaseOnchainVerificationCountryResidenceAttestation(
-        accountAddress,
-      );
-    valid = verification.valid;
-    data = verification.data;
-    explanation = valid
-      ? `Country of residence verified for ${accountAddress} on Coinbase Onchain. A product based on the country is recommended.`
-      : `Country of residence not verified for ${accountAddress} on Coinbase Onchain. A random product is recommended.`;
-  } else if (
-    frame?.matchingCriteria === 'COINBASE_ONCHAIN_VERIFICATIONS_ACCOUNT'
-  ) {
-    const verification =
-      await verifyCoinbaseOnchainVerificationAccountAttestation(accountAddress);
-    valid = verification.valid;
-    explanation = valid
-      ? `Coinbase account member attestation for ${accountAddress}. A special product is recommended.`
-      : `No Coinbase account member attestation for ${accountAddress}. A random product is recommended.`;
-  } else if (frame?.matchingCriteria === 'COINBASE_ONCHAIN_VERIFICATIONS_ONE') {
-    const verification =
-      await verifyCoinbaseOnchainVerificationOneAttestation(accountAddress);
-    valid = verification.valid;
-    explanation = valid
-      ? `Coinbase One account member attestation for ${accountAddress}. A special product is recommended.`
-      : `No Coinbase One account member attestation for ${accountAddress}. A random product is recommended.`;
-  } else {
-    valid = false;
-  }
+  const { valid, explanation, data } = await processVerification(
+    frame?.matchingCriteria!,
+    accountAddress,
+  );
+
+  let customExplanation = explanation;
 
   // Get products
   const products = await db
@@ -280,9 +300,9 @@ export const POST = async (req: Request) => {
         if (recommendedProduct) {
           imageSrc = `${getBaseUrl()}/api/og?title=${recommendedProduct!.title}&subtitle=${recommendedProduct!.description}&content=${recommendedProduct!.variantFormattedPrice}&url=${recommendedProduct!.image}&width=600`;
 
-          explanation = `Country of residence verified as ${country} for ${accountAddress} on Coinbase Onchain`;
+          customExplanation = `Country of residence verified as ${country} for ${accountAddress} on Coinbase Onchain`;
         } else {
-          explanation = `Product not found for country of residence verified as ${country} for ${accountAddress} on Coinbase Onchain`;
+          customExplanation = `Product not found for country of residence verified as ${country} for ${accountAddress} on Coinbase Onchain`;
         }
       }
     } else if (
@@ -312,7 +332,7 @@ export const POST = async (req: Request) => {
     const randomIndex = Math.floor(Math.random() * products.length);
     recommendedProduct = products[randomIndex];
     imageSrc = `${getBaseUrl()}/api/og?title=${recommendedProduct!.title}&subtitle=${recommendedProduct!.description}&content=${recommendedProduct!.variantFormattedPrice}&url=${recommendedProduct!.image}&width=600`;
-    explanation = `No onchain data or matching product found for ${accountAddress}. A random product is recommended.`;
+    customExplanation = `No onchain data or matching product found for ${accountAddress}. A random product is recommended.`;
   }
 
   const buttons: [FrameButtonMetadata, ...FrameButtonMetadata[]] = [
@@ -349,7 +369,7 @@ export const POST = async (req: Request) => {
     postUrl: `${getBaseUrl()}/api/frame`,
     ...(dev && {
       state: {
-        description: explanation,
+        description: customExplanation,
       },
     }),
   });
