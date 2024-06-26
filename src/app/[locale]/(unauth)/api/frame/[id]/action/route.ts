@@ -39,12 +39,12 @@ const validAttestations = async (
   attester?: string,
 ): Promise<Attestation[]> => {
   // Build the filter conditions based on provided inputs
-  let filters = `recipient: { equals: "${address}" }`;
+  let filters = `recipient: { equals: "${address}", mode: insensitive }`;
   if (schema) {
-    filters += `, schemaId: { equals: "${schema}" }`;
+    filters += `, schemaId: { equals: "${schema}", mode: insensitive }`;
   }
   if (attester) {
-    filters += `, attester: { equals: "${attester}" }`;
+    filters += `, attester: { equals: "${attester}", mode: insensitive }`;
   }
 
   const query = `
