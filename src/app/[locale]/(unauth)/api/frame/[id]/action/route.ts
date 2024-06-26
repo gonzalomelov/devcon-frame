@@ -35,17 +35,22 @@ export type QueryResponse = {
 
 const validAttestations = async (
   address: string,
-  schema: string,
-  attester: string,
+  schema?: string,
+  attester?: string,
 ): Promise<Attestation[]> => {
+  // Build the filter conditions based on provided inputs
+  let filters = `recipient: { equals: "${address}" }`;
+  if (schema) {
+    filters += `, schemaId: { equals: "${schema}" }`;
+  }
+  if (attester) {
+    filters += `, attester: { equals: "${attester}" }`;
+  }
+
   const query = `
     query Attestations {
       attestations(
-        where: {
-          schemaId: { equals: "${schema}" },
-          attester: { equals: "${attester}" },
-          recipient: { equals: "${address}" }
-        }
+        where: { ${filters} }
       ) {
         id
         attester
@@ -79,7 +84,7 @@ const validAttestations = async (
     (attestation: Attestation) =>
       attestation.revocationTime === 0 &&
       attestation.expirationTime === 0 &&
-      attestation.schema.id === schema,
+      (!schema || attestation.schema.id === schema),
   );
 
   return filteredAttestations;
@@ -140,6 +145,10 @@ const verifyCoinbaseOnchainVerificationOneAttestation = async (
     data: { attestation: attestations[0] },
   };
 };
+
+// New
+// Airstack Poaps
+// Take into account old attestations
 
 export const POST = async (req: Request) => {
   // Validate frame and get account address
