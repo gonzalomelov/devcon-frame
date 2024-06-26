@@ -1,5 +1,6 @@
 import '@/styles/global.css';
 
+import { Analytics } from '@vercel/analytics/react';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { NextIntlClientProvider, useMessages } from 'next-intl';
@@ -63,6 +64,7 @@ export default function RootLayout(props: {
         >
           {props.children}
         </NextIntlClientProvider>
+        <Analytics />
       </body>
     </html>
   );
