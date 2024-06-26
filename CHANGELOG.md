@@ -1,3 +1,15 @@
+# [1.12.0](https://github.com/gonzalomelov/target-onchain/compare/v1.11.2...v1.12.0) (2024-06-26)
+
+
+### Bug Fixes
+
+* fetch all attestations ([9279bad](https://github.com/gonzalomelov/target-onchain/commit/9279bad569991f47bca3e34fd04964c4fa2a7058))
+
+
+### Features
+
+* add poaps as onchain criteria ([cca57cb](https://github.com/gonzalomelov/target-onchain/commit/cca57cbcba495fce64c6bbd75d02a57285247a34))
+
 ## [1.11.2](https://github.com/gonzalomelov/target-onchain/compare/v1.11.1...v1.11.2) (2024-06-26)
 
 
