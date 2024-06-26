@@ -28,7 +28,7 @@ export const frameSchema = mysqlTable('Frame', {
   button: varchar('button', { length: 255 }).notNull(),
   matchingCriteria: mysqlEnum('matchingCriteria', [
     'RECEIPTS_XYZ_ALL_TIME_RUNNING',
-    'COINBASE_ONCHAIN_VERIFICATIONS',
+    'COINBASE_ONCHAIN_VERIFICATIONS_COUNTRY',
     'COINBASE_ONCHAIN_VERIFICATIONS_ONE',
     'ALL',
   ]),

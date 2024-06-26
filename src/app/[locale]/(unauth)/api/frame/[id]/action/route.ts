@@ -185,7 +185,9 @@ export const POST = async (req: Request) => {
     explanation = valid
       ? `10 or more attestations found on Receipts.xyz for ${accountAddress}. A special product is recommended.`
       : `Not more than 10 attestations found on Receipts.xyz for ${accountAddress}. A random product is recommended.`;
-  } else if (frame?.matchingCriteria === 'COINBASE_ONCHAIN_VERIFICATIONS') {
+  } else if (
+    frame?.matchingCriteria === 'COINBASE_ONCHAIN_VERIFICATIONS_COUNTRY'
+  ) {
     const verification =
       await verifyCoinbaseOnchainVerificationCountryResidenceAttestation(
         accountAddress,
@@ -224,7 +226,9 @@ export const POST = async (req: Request) => {
       if (recommendedProduct) {
         imageSrc = `${getBaseUrl()}/api/og?title=Congrats on your +10th run!&subtitle=You're now eligible to buy:&content=${recommendedProduct!.title}&url=${recommendedProduct!.image}&width=600`;
       }
-    } else if (frame?.matchingCriteria === 'COINBASE_ONCHAIN_VERIFICATIONS') {
+    } else if (
+      frame?.matchingCriteria === 'COINBASE_ONCHAIN_VERIFICATIONS_COUNTRY'
+    ) {
       const { attestation } = data;
 
       const schema = 'string verifiedCountry';
