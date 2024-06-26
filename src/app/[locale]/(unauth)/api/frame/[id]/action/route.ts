@@ -111,6 +111,20 @@ const verifyCoinbaseOnchainVerificationCountryResidenceAttestation = async (
   };
 };
 
+const verifyCoinbaseOnchainVerificationAccountAttestation = async (
+  address: string,
+): Promise<{ valid: boolean; data: any }> => {
+  const attestations = await validAttestations(
+    address,
+    Env.COINBASE_ONCHAIN_VERIFICATION_ACCOUNT_SCHEMA,
+    Env.COINBASE_ONCHAIN_VERIFICATION_ATTESTER,
+  );
+  return {
+    valid: attestations.length > 0,
+    data: { attestation: attestations[0] },
+  };
+};
+
 const verifyCoinbaseOnchainVerificationOneAttestation = async (
   address: string,
 ): Promise<{ valid: boolean; data: any }> => {
@@ -197,6 +211,15 @@ export const POST = async (req: Request) => {
     explanation = valid
       ? `Country of residence verified for ${accountAddress} on Coinbase Onchain. A product based on the country is recommended.`
       : `Country of residence not verified for ${accountAddress} on Coinbase Onchain. A random product is recommended.`;
+  } else if (
+    frame?.matchingCriteria === 'COINBASE_ONCHAIN_VERIFICATIONS_ACCOUNT'
+  ) {
+    const verification =
+      await verifyCoinbaseOnchainVerificationAccountAttestation(accountAddress);
+    valid = verification.valid;
+    explanation = valid
+      ? `Coinbase account member attestation for ${accountAddress}. A special product is recommended.`
+      : `No Coinbase account member attestation for ${accountAddress}. A random product is recommended.`;
   } else if (frame?.matchingCriteria === 'COINBASE_ONCHAIN_VERIFICATIONS_ONE') {
     const verification =
       await verifyCoinbaseOnchainVerificationOneAttestation(accountAddress);
@@ -250,6 +273,16 @@ export const POST = async (req: Request) => {
         } else {
           explanation = `Product not found for country of residence verified as ${country} for ${accountAddress} on Coinbase Onchain`;
         }
+      }
+    } else if (
+      frame?.matchingCriteria === 'COINBASE_ONCHAIN_VERIFICATIONS_ACCOUNT'
+    ) {
+      recommendedProduct = products.find((product) =>
+        /Special/i.test(product.description),
+      );
+
+      if (recommendedProduct) {
+        imageSrc = `${getBaseUrl()}/api/og?title=${recommendedProduct!.title}&subtitle=${recommendedProduct!.description}&content=${recommendedProduct!.variantFormattedPrice}&url=${recommendedProduct!.image}&width=600`;
       }
     } else if (
       frame?.matchingCriteria === 'COINBASE_ONCHAIN_VERIFICATIONS_ONE'
