@@ -27,7 +27,7 @@ export type Attestation = {
   decodedDataJson: string;
 };
 
-export type EASQueryResponse = {
+export type QueryResponse = {
   data?: {
     attestations: Attestation[];
   };
@@ -38,6 +38,7 @@ const validAttestations = async (
   schema: string,
   attester: string,
 ): Promise<Attestation[]> => {
+  // // ############# USE EAS #############
   const query = `
     query Attestations {
       attestations(
@@ -71,16 +72,19 @@ const validAttestations = async (
     body: JSON.stringify({ query }),
   });
 
-  const result: EASQueryResponse = await response.json();
+  const result: QueryResponse = await response.json();
 
-  const attestations = (result.data!.attestations || []).filter(
-    (attestation) =>
+  const attestations = result.data!.attestations || [];
+  // // ############# USE EAS #############
+
+  const filteredAttestations = attestations.filter(
+    (attestation: Attestation) =>
       attestation.revocationTime === 0 &&
       attestation.expirationTime === 0 &&
       attestation.schema.id === schema,
   );
 
-  return attestations;
+  return filteredAttestations;
 };
 
 const verifyReceiptsRunningAttestation = async (
