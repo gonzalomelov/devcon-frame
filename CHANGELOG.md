@@ -1,3 +1,10 @@
+## [1.11.2](https://github.com/gonzalomelov/target-onchain/compare/v1.11.1...v1.11.2) (2024-06-26)
+
+
+### Bug Fixes
+
+* change product description column type ([de36592](https://github.com/gonzalomelov/target-onchain/commit/de365922f169c79665663fd1646d7733398c6f46))
+
 ## [1.11.1](https://github.com/gonzalomelov/target-onchain/compare/v1.11.0...v1.11.1) (2024-06-26)
 
 
