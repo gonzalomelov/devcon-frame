@@ -1,3 +1,10 @@
+## [1.12.3](https://github.com/gonzalomelov/target-onchain/compare/v1.12.2...v1.12.3) (2024-06-27)
+
+
+### Bug Fixes
+
+* :| ([73954d8](https://github.com/gonzalomelov/target-onchain/commit/73954d8d1076c313168be8cf6d72c8e5d71e700a))
+
 ## [1.12.2](https://github.com/gonzalomelov/target-onchain/compare/v1.12.1...v1.12.2) (2024-06-27)
 
 
