@@ -51,6 +51,7 @@ interface PoapsQueryResponse {
 }
 
 export type Product = {
+  id: string;
   title: string;
   description: string;
 };
@@ -60,12 +61,8 @@ function extractKeywords(text: string): string[] {
 }
 
 function countMatchedKeywords(poap: Poap, product: Product): number {
-  const poapKeywords = extractKeywords(
-    `${poap.poapEvent.eventName} ${poap.poapEvent.description}`,
-  );
-  const productKeywords = new Set(
-    extractKeywords(`${product.title} ${product.description}`),
-  );
+  const poapKeywords = extractKeywords(`${poap.poapEvent.eventName}`);
+  const productKeywords = new Set(extractKeywords(`${product.title}`));
 
   // Count matches by checking each POAP keyword against product keywords
   return poapKeywords.filter((keyword) => productKeywords.has(keyword)).length;
@@ -429,17 +426,31 @@ export const POST = async (req: Request) => {
       const { poaps } = data;
 
       const recommendedProducts: Product[] = [];
+      const recommendedProductIds = new Set<string>();
 
       poaps.forEach((poap: Poap) => {
-        recommendedProducts.push(...recommendProducts(poap, products));
+        const recommendations = recommendProducts(poap, products);
+        recommendations.forEach((product) => {
+          if (!recommendedProductIds.has(product.id)) {
+            recommendedProducts.push(product);
+            recommendedProductIds.add(product.id);
+          }
+        });
       });
 
       if (recommendedProducts.length > 0) {
+        const randomIndex = Math.floor(
+          Math.random() * recommendedProducts.length,
+        );
         recommendedProduct = products.find(
-          (p) => p.title === recommendedProducts[0]!.title,
+          (p) => p.title === recommendedProducts[randomIndex]!.title,
         );
 
         imageSrc = `${getBaseUrl()}/api/og?title=${recommendedProduct!.title}&subtitle=${recommendedProduct!.description}&content=${recommendedProduct!.variantFormattedPrice}&url=${recommendedProduct!.image}&width=600`;
+
+        customExplanation = `Product found from visited country on Poap ${recommendedProducts[0]!.title} for ${accountAddress} based on Poaps`;
+      } else {
+        customExplanation = `No product matched for countries visited for ${accountAddress} based on Poaps`;
       }
     }
   }
