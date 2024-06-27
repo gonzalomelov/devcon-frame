@@ -156,7 +156,7 @@ const validPoaps = async (address: string): Promise<Poap[]> => {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      Authorization: '1d57e7c0915094f04bba4d43db34dc413',
+      Authorization: Env.AIRSTACK_API_KEY,
     },
     body: JSON.stringify({ query }),
   });
