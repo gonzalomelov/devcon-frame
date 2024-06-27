@@ -448,7 +448,7 @@ export const POST = async (req: Request) => {
 
         imageSrc = `${getBaseUrl()}/api/og?title=${recommendedProduct!.title}&subtitle=${recommendedProduct!.description}&content=${recommendedProduct!.variantFormattedPrice}&url=${recommendedProduct!.image}&width=600`;
 
-        customExplanation = `Product found from visited country on Poap ${recommendedProducts[0]!.title} for ${accountAddress} based on Poaps`;
+        customExplanation = `Product found from visited country on Poap ${recommendedProducts[randomIndex]!.title} for ${accountAddress} based on Poaps`;
       } else {
         customExplanation = `No product matched for countries visited for ${accountAddress} based on Poaps`;
       }
