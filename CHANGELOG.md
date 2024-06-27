@@ -1,3 +1,10 @@
+## [1.12.1](https://github.com/gonzalomelov/target-onchain/compare/v1.12.0...v1.12.1) (2024-06-27)
+
+
+### Bug Fixes
+
+* poap-based recommendation ([080e9e1](https://github.com/gonzalomelov/target-onchain/commit/080e9e1db2c809f523329f07847facc9fcfae349))
+
 # [1.12.0](https://github.com/gonzalomelov/target-onchain/compare/v1.11.2...v1.12.0) (2024-06-26)
 
 
