@@ -7,13 +7,13 @@ import {
   getFrameMessage,
 } from '@coinbase/onchainkit/frame';
 import { SchemaEncoder } from '@ethereum-attestation-service/eas-sdk';
-import { eq } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 import { NextResponse } from 'next/server';
 
 import { db } from '@/libs/DB';
 import { Env } from '@/libs/Env';
 import { logger } from '@/libs/Logger';
-import { frameSchema, productSchema } from '@/models/Schema';
+import { frameSchema, productSchema, userProductSchema } from '@/models/Schema';
 import { defaultErrorFrame, getBaseUrl } from '@/utils/Helpers';
 
 export type Attestation = {
@@ -234,10 +234,31 @@ const verifyPoapsOwned = async (
   };
 };
 
+const verifyAll = async (
+  address: string,
+  frameId: number,
+): Promise<{ valid: boolean; data: any }> => {
+  const recommendedProducts = await db
+    .select()
+    .from(userProductSchema)
+    .where(
+      and(
+        eq(userProductSchema.walletAddress, address),
+        eq(userProductSchema.frameId, frameId),
+      ),
+    );
+
+  return {
+    valid: recommendedProducts.length > 0,
+    data: { recommendedProducts },
+  };
+};
+
 // Take into account old attestations
 
 type VerificationFunction = (
   address: string,
+  frameId?: number,
 ) => Promise<{ valid: boolean; data?: any }>;
 type MessageFunction = (address: string) => string;
 
@@ -283,18 +304,26 @@ const verificationMap: { [key: string]: VerificationMapEntry } = {
     failure: (address: string) =>
       `No POAPs owned by ${address}. A random product is recommended.`,
   },
+  ALL: {
+    verify: (address: string, frameId?: number) => verifyAll(address, frameId!),
+    success: (address: string) =>
+      `Related onchain data found for ${address}. A specific product might be recommended.`,
+    failure: (address: string) =>
+      `No related onchain data found for ${address}. A specific product might be recommended.`,
+  },
 };
 
 const processVerification = async (
   matchingCriteria: string | undefined,
   accountAddress: string,
+  frameId: number,
 ) => {
   if (!matchingCriteria || !verificationMap[matchingCriteria]) {
     return { valid: false, explanation: '', data: null };
   }
 
   const { verify, success, failure } = verificationMap[matchingCriteria]!;
-  const verification = await verify(accountAddress);
+  const verification = await verify(accountAddress, frameId);
   const { valid } = verification;
   const explanation = valid ? success(accountAddress) : failure(accountAddress);
 
@@ -355,6 +384,7 @@ export const POST = async (req: Request) => {
   const { valid, explanation, data } = await processVerification(
     frame?.matchingCriteria!,
     accountAddress,
+    frame?.id!,
   );
 
   let customExplanation = explanation;
@@ -451,6 +481,18 @@ export const POST = async (req: Request) => {
         customExplanation = `Product found from visited country on Poap ${recommendedProducts[randomIndex]!.title} for ${accountAddress} based on Poaps`;
       } else {
         customExplanation = `No product matched for countries visited for ${accountAddress} based on Poaps`;
+      }
+    } else if (frame?.matchingCriteria === 'ALL') {
+      const { recommendedProducts } = data;
+
+      if (recommendedProducts.length > 0) {
+        recommendedProduct = products.find(
+          (p) => p.id === recommendedProducts[0]!.productId1,
+        );
+
+        if (recommendedProduct) {
+          imageSrc = `${getBaseUrl()}/api/og?title=${recommendedProduct!.title}&subtitle=${recommendedProduct!.description}&content=${recommendedProduct!.variantFormattedPrice}&url=${recommendedProduct!.image}&width=600`;
+        }
       }
     }
   }

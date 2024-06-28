@@ -2,6 +2,7 @@ import {
   int,
   mysqlEnum,
   mysqlTable,
+  primaryKey,
   text,
   varchar,
 } from 'drizzle-orm/mysql-core';
@@ -50,3 +51,17 @@ export const productSchema = mysqlTable('Product', {
   image: varchar('image', { length: 255 }).notNull(),
   createdAt: int('createdAt').default(0).notNull(),
 });
+
+export const userProductSchema = mysqlTable(
+  'UserProduct',
+  {
+    walletAddress: varchar('walletAddress', { length: 255 }).notNull(),
+    frameId: int('frameId').notNull(),
+    productId1: varchar('productId1', { length: 255 }).notNull(),
+    productId2: varchar('productId2', { length: 255 }),
+    productId3: varchar('productId3', { length: 255 }),
+  },
+  (table) => ({
+    pk: primaryKey({ columns: [table.walletAddress, table.frameId] }),
+  }),
+);
