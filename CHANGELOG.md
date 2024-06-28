@@ -1,3 +1,10 @@
+# [1.13.0](https://github.com/gonzalomelov/target-onchain/compare/v1.12.3...v1.13.0) (2024-06-28)
+
+
+### Features
+
+* add ALL matching criteria that fetches data from the ML algorithm pre-executed ([8c840a9](https://github.com/gonzalomelov/target-onchain/commit/8c840a914aa548f407655645b05b21a5ade6f80e))
+
 ## [1.12.3](https://github.com/gonzalomelov/target-onchain/compare/v1.12.2...v1.12.3) (2024-06-27)
 
 
