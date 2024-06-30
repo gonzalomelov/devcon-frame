@@ -19,6 +19,8 @@ export const Env = createEnv({
     COINBASE_ONCHAIN_VERIFICATION_COUNTRY_RESIDENCE_SCHEMA: z.string(),
     COINBASE_ONCHAIN_VERIFICATION_ACCOUNT_SCHEMA: z.string(),
     COINBASE_ONCHAIN_VERIFICATION_ONE_SCHEMA: z.string(),
+    GC_API_KEY: z.string(),
+    GC_SCORER_ID: z.string(),
   },
   client: {
     NEXT_PUBLIC_APP_URL: z.string().optional(),
@@ -53,5 +55,7 @@ export const Env = createEnv({
       process.env.COINBASE_ONCHAIN_VERIFICATION_ACCOUNT_SCHEMA,
     COINBASE_ONCHAIN_VERIFICATION_ONE_SCHEMA:
       process.env.COINBASE_ONCHAIN_VERIFICATION_ONE_SCHEMA,
+    GC_API_KEY: process.env.GC_API_KEY,
+    GC_SCORER_ID: process.env.GC_SCORER_ID,
   },
 });
