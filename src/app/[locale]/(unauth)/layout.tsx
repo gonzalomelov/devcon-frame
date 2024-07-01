@@ -18,14 +18,14 @@ export default function Layout(props: { children: React.ReactNode }) {
               {t('home_link')}
             </Link>
           </li>
-          <li>
+          {/* <li>
             <Link
               href="/support/"
               className="border-none text-gray-700 hover:text-gray-900"
             >
               {t('support_link')}
             </Link>
-          </li>
+          </li> */}
           {/* <li>
             <Link
               href="/guestbook/"
@@ -42,18 +42,18 @@ export default function Layout(props: { children: React.ReactNode }) {
               {t('portfolio_link')}
             </Link>
           </li> */}
-          <li>
+          {/* <li>
             <Link
               href="/termsAndConditions/"
               className="border-none text-gray-700 hover:text-gray-900"
             >
               {t('terms_and_conditions_link')}
             </Link>
-          </li>
+          </li> */}
           <li>
             <a
               className="border-none text-gray-700 hover:text-gray-900"
-              href="https://github.com/gonzalomelov/onchain-hyper-personalization"
+              href="https://github.com/gonzalomelov/devcon-frame"
             >
               GitHub
             </a>

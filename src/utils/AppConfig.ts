@@ -4,7 +4,7 @@ const localePrefix: LocalePrefix = 'as-needed';
 
 // FIXME: Update this configuration file based on your project information
 export const AppConfig = {
-  name: 'Onchain Hyper-Personalized Commerce',
+  name: 'Devcon 7 Raffle',
   locales: ['en', 'fr'],
   defaultLocale: 'en',
   localePrefix,
