@@ -4,6 +4,8 @@
 
 The Farcaster Frame for DevCon 7 Raffle is a dynamic and interactive tool designed to enhance the bidding experience for the DevCon 7 Raffle-Auction. This frame allows users who have already placed bids in the raffle to bump their bids directly through the Farcaster platform. By leveraging the power of Farcaster, we aim to provide a seamless and engaging experience for all participants.
 
+Check it out on [Warpcast](https://warpcast.com/gonzalomelov.eth/0xec34c309).
+
 ## Features
 
 - **Bid Bumping**: Users can increase their existing bids directly from the Farcaster frame.
@@ -14,7 +16,7 @@ The Farcaster Frame for DevCon 7 Raffle is a dynamic and interactive tool design
 ## Requirements
 
 - **Farcaster Account**: Users must have an active Farcaster account to participate.
-- **Farcaster Account**: Users must have already bade using the [website](https://raffle.devcon.org/).
+- **Bid**: Users must have already bade using the [website](https://raffle.devcon.org/).
 
 ## Installation
 
