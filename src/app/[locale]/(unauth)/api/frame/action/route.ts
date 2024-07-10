@@ -31,6 +31,30 @@ export const POST = async (req: Request) => {
     return new NextResponse(defaultErrorFrame);
   }
 
+  const hasFinished = true;
+
+  if (hasFinished) {
+    const buttons: [FrameButtonMetadata, ...FrameButtonMetadata[]] = [
+      {
+        action: 'link',
+        label: 'Visit',
+        target: 'https://devcon.org',
+      },
+    ];
+
+    const frameHtmlResponse = getFrameHtmlResponse({
+      buttons,
+      image: {
+        src: 'https://devcon.org/assets/images/dc7-og.png',
+      },
+      ogDescription: 'Devcon 7',
+      ogTitle: 'Devcon 7',
+      postUrl: `${getBaseUrl()}/api/frame`,
+    });
+
+    return new NextResponse(frameHtmlResponse);
+  }
+
   // const dev = !!message?.input;
 
   accountAddress =
