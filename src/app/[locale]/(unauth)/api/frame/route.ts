@@ -18,7 +18,7 @@ export const GET = async (req: Request) => {
         },
       ],
       image: {
-        src: `${getBaseUrl()}/api/og?title=Devcon 7&subtitle=Raffle&content=Time left 8d&url=https://i.imgur.com/k7EkTmI.png`,
+        src: `${getBaseUrl()}/api/og?title=Devcon 7&subtitle=Raffle&content=Last day!&url=https://i.imgur.com/k7EkTmI.png`,
       },
       ...(dev && {
         input: {
